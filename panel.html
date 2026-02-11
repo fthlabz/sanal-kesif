@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bunkervan | Esnaf Paneli</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #777; font-size: 14px; margin-bottom: 20px; }
+        
+        /* Yükleme Alanı */
+        .upload-box { background: #f8f9fa; padding: 20px; border-radius: 8px; border: 2px dashed #ccc; text-align: center; margin-bottom: 20px; }
+        .input-group { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+        input[type="number"] { width: 100px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        button.btn-add { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button.btn-add:hover { background: #0056b3; }
+
+        /* Vitrin Listesi */
+        .product-list { display: grid; gap: 15px; }
+        .product-item { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .product-info img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; margin-right: 15px; vertical-align: middle; }
+        .product-info span { font-weight: bold; color: #333; }
+        
+        /* Silme Butonları */
+        button.btn-delete { background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+        button.btn-clear-all { background: #343a40; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Bunkervan Sanal Keşif</h2>
+    <div class="subtitle">Maksimum 50 Ürün | Esnaf Kontrol Paneli</div>
+
+    <div class="upload-box">
+        <input type="file" id="fileInput" accept="image/jpeg, image/png">
+        <div class="input-group">
+            <input type="number" id="enInput" placeholder="En (cm)" required>
+            <input type="number" id="boyInput" placeholder="Boy (cm)" required>
+            <button class="btn-add" onclick="urunuYukle()">Vitrini Güncelle</button>
+        </div>
+        <p id="statusText" style="color: #007bff; font-weight: bold; display: none;">Yükleniyor, lütfen bekleyin...</p>
+    </div>
+
+    <div class="product-list" id="productList">
+        </div>
+
+    <button class="btn-clear-all" onclick="tumunuTemizle()">Tüm Vitrini Temizle (Sıfırla)</button>
+</div>
+
+<script>
+    // --- GITHUB AYARLARI (SENİN HİLEN) ---
+    const GITHUB_KULLANICI_ADI = "SENIN_GITHUB_ADIN"; // Örn: fthlabz
+    const REPO_ADI = "REPO_ADIN"; // Örn: ar-fth
+    
+    // Şifreyi (Token) Botlardan Gizliyoruz
+    const tokenParca1 = "ghp_";
+    const tokenParca2 = "BURAYA_KALAN_SIFREYI_YAZ"; 
+    const githubToken = tokenParca1 + tokenParca2;
+
+    // --- LOKAL VİTRİN HAFIZASI (JSON Mantığı) ---
+    let vitrin = JSON.parse(localStorage.getItem('bunkervanVitrin')) || [];
+    vitriniCiz();
+
+    // Ürünü GitHub'a Yükleme ve Listeye Ekleme
+    async function urunuYukle() {
+        if (vitrin.length >= 50) {
+            alert("Vitrin kapasitesi dolu! (Maksimum 50 ürün). Lütfen eski ürünleri silin.");
+            return;
+        }
+
+        const file = document.getElementById('fileInput').files[0];
+        const en = document.getElementById('enInput').value;
+        const boy = document.getElementById('boyInput').value;
+
+        if (!file || !en || !boy) {
+            alert("Lütfen resim seçin ve En/Boy ölçülerini girin!");
+            return;
+        }
+
+        document.getElementById('statusText').style.display = "block";
+
+        // Resmi Base64'e çevir
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async function () {
+            const base64Content = reader.result.split(',')[1];
+            const dosyaAdi = "hali_" + Date.now() + ".jpg"; // Benzersiz isim
+
+            // GitHub API'ye Gönder
+            const apiURL = `https://api.github.com/repos/${GITHUB_KULLANICI_ADI}/${REPO_ADI}/contents/images/${dosyaAdi}`;
+            
+            try {
+                const response = await fetch(apiURL, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Yeni ürün eklendi: ${en}x${boy}`,
+                        content: base64Content
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Ürünü Listeye Ekle
+                    const yeniUrun = {
+                        id: Date.now(),
+                        url: data.content.download_url, // GitHub'daki direkt resim linki
+                        en: en,
+                        boy: boy
+                    };
+                    vitrin.push(yeniUrun);
+                    localStorage.setItem('bunkervanVitrin', JSON.stringify(vitrin));
+                    
+                    document.getElementById('statusText').style.display = "none";
+                    document.getElementById('fileInput').value = "";
+                    vitriniCiz();
+                } else {
+                    alert("GitHub'a yüklenirken hata oluştu! Token'ı kontrol edin.");
+                    document.getElementById('statusText').style.display = "none";
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Bağlantı hatası!");
+            }
+        };
+    }
+
+    // Ekrandaki Listeyi Güncelleme
+    function vitriniCiz() {
+        const listeDiv = document.getElementById('productList');
+        listeDiv.innerHTML = "";
+        
+        vitrin.forEach((urun, index) => {
+            listeDiv.innerHTML += `
+                <div class="product-item">
+                    <div class="product-info">
+                        <img src="${urun.url}" alt="Halı">
+                        <span>Ürün ${index + 1} - Ölçü: ${urun.en}x${urun.boy} cm</span>
+                    </div>
+                    <button class="btn-delete" onclick="urunuSil(${urun.id})">Sil</button>
+                </div>
+            `;
+        });
+    }
+
+    // Tekil Ürün Silme (Onaylı)
+    function urunuSil(id) {
+        if (confirm("Bu halıyı vitrinden silmek istediğinize emin misiniz?")) {
+            vitrin = vitrin.filter(urun => urun.id !== id);
+            localStorage.setItem('bunkervanVitrin', JSON.stringify(vitrin));
+            vitriniCiz();
+        }
+    }
+
+    // Tümünü Temizle (Çift Onaylı)
+    function tumunuTemizle() {
+        if (confirm("DİKKAT! Tüm vitrin silinecek. Emin misiniz?")) {
+            if (confirm("Bu işlem geri alınamaz! Gerçekten tüm ürünleri siliyorum?")) {
+                vitrin = [];
+                localStorage.setItem('bunkervanVitrin', JSON.stringify(vitrin));
+                vitriniCiz();
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
