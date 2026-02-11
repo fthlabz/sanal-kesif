@@ -10,14 +10,11 @@
         
         model-viewer { width: 100vw; height: 100vh; outline: none; background-color: #f4f4f4; }
         
-        /* Yükleniyor Ekranı */
         #loading-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f4f4f4; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; }
         .spinner { border: 4px solid rgba(0,0,0,0.1); border-top: 4px solid #333; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Alt Kontrol Paneli */
         .ui-panel { position: absolute; bottom: 0; width: 100%; background: white; padding: 20px 15px; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); box-sizing: border-box; z-index: 10; }
-        
         .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .nav-btn { background: #e9ecef; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; color: #333; }
         .nav-btn:active { background: #d3d9df; }
@@ -36,9 +33,9 @@
     </div>
 
     <model-viewer id="rugViewer"
-        src="https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Box/glTF-Binary/Box.glb"
+        src="https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/BoxTextured/glTF-Binary/BoxTextured.glb"
         ar ar-modes="webxr scene-viewer quick-look"
-        camera-controls shadow-intensity="1" auto-rotate exposure="0.8">
+        camera-controls shadow-intensity="1.5" auto-rotate exposure="0.8">
     </model-viewer>
 
     <div class="ui-panel">
@@ -63,19 +60,6 @@
         const loadingScreen = document.getElementById('loading-screen');
         const loadingText = document.getElementById('loading-text');
 
-        // Kurşun Geçirmez CDN Çevirici (Main/Master Fark Etmez)
-        function cdnLinkYap(orijinalUrl) {
-            if(orijinalUrl.includes("raw.githubusercontent.com")) {
-                let parcalar = orijinalUrl.split('/');
-                let kullanici = parcalar[3];
-                let repo = parcalar[4];
-                let branch = parcalar[5]; // main veya master
-                let yol = parcalar.slice(6).join('/');
-                return `https://cdn.jsdelivr.net/gh/${kullanici}/${repo}@${branch}/${yol}`;
-            }
-            return orijinalUrl;
-        }
-
         async function haliyiYukle(index) {
             if (vitrin.length === 0) {
                 loadingScreen.style.display = 'none';
@@ -91,32 +75,29 @@
             isimText.innerText = `Ürün ${index + 1} / ${vitrin.length}`;
             olcuText.innerText = `Ölçü: ${urun.en}x${urun.boy} cm`;
 
-            // Halı Ebatını Ayarla (Kalınlık 1 santim)
+            // Halı ebatını ayarla (En, 1cm kalınlık, Boy)
             mv.scale = `${urun.en / 100} 0.01 ${urun.boy / 100}`;
 
             try {
-                // 1. Güvenli Linki Al
-                const guvenliLink = cdnLinkYap(urun.url);
-
-                // 2. Apple'ı Tamamen Kandıran Hile (Resmi İndirip Paketliyoruz)
-                const resimCevap = await fetch(guvenliLink);
-                if(!resimCevap.ok) throw new Error("GitHub resmi henüz onaylamadı (10 sn bekleyin)");
+                // Resmi direkt kendi depondan Safariyi hackleyerek (Blob) çekiyoruz.
+                const resimCevap = await fetch(urun.url);
+                if(!resimCevap.ok) throw new Error("Resim indirilemedi.");
                 
                 const resimBlob = await resimCevap.blob();
                 const sahteLink = URL.createObjectURL(resimBlob);
 
-                // 3. Halının Üzerine Sür
+                // Boya Tutan Modelin üzerine halı desenini yapıştırıyoruz!
                 const texture = await mv.createTexture(sahteLink);
                 const material = mv.model.materials[0];
                 material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
                 material.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]); 
                 
-                // Başarılı! Yükleme ekranını kapat.
+                // İşlem tamam, ekranı aç
                 loadingScreen.style.display = 'none';
 
             } catch (error) {
                 console.error("Hata Detayı:", error);
-                loadingText.innerText = "Resim GitHub'dan bekleniyor... Lütfen sayfayı yenileyin.";
+                loadingText.innerText = "Bağlantı zayıf, sayfayı yenileyin.";
             }
         }
 
@@ -128,7 +109,6 @@
             haliyiYukle(aktifIndex);
         }
 
-        // Model Viewer hazır olduğunda tetikle
         mv.addEventListener('load', () => {
             haliyiYukle(aktifIndex);
         });
