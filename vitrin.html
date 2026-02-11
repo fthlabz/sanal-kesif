@@ -8,26 +8,23 @@
     <style>
         body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #f4f4f4; }
         
-        /* 3D Ürün Alanı - Kırmızı Koltuktaki gibi tam ekran ve çevrilebilir */
         model-viewer { width: 100vw; height: 100vh; outline: none; background-color: #f4f4f4; }
         
-        /* Yükleniyor Uyarıları */
+        /* Yükleniyor Ekranı */
         #loading-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #f4f4f4; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20; }
         .spinner { border: 4px solid rgba(0,0,0,0.1); border-top: 4px solid #333; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Alt Kontrol Paneli - Senin beğendiğin şık tasarım */
+        /* Alt Kontrol Paneli */
         .ui-panel { position: absolute; bottom: 0; width: 100%; background: white; padding: 20px 15px; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); box-sizing: border-box; z-index: 10; }
         
-        /* Kaydırma ve Bilgi */
         .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .nav-btn { background: #e9ecef; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; color: #333; transition: 0.2s; }
+        .nav-btn { background: #e9ecef; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; color: #333; }
         .nav-btn:active { background: #d3d9df; }
         .info-area { text-align: center; }
         .info-area h3 { margin: 0; font-size: 16px; color: #111; }
         .info-area p { margin: 3px 0 0 0; font-size: 13px; color: #007bff; font-weight: bold; }
         
-        /* Sihirli AR Butonu */
         .ar-btn { background: #111; color: #fff; border: none; padding: 15px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
     </style>
 </head>
@@ -35,11 +32,11 @@
 
     <div id="loading-screen">
         <div class="spinner"></div>
-        <strong style="color:#555">Sanal Keşif Hazırlanıyor...</strong>
+        <strong id="loading-text" style="color:#555">Halı Dokunuyor...</strong>
     </div>
 
     <model-viewer id="rugViewer"
-        src="https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Box/glTF-Binary/Box.glb"
+        src="https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Box/glTF-Binary/Box.glb"
         ar ar-modes="webxr scene-viewer quick-look"
         camera-controls shadow-intensity="1" auto-rotate exposure="0.8">
     </model-viewer>
@@ -48,7 +45,7 @@
         <div class="nav-buttons">
             <button class="nav-btn" onclick="degistir(-1)">⬅ Önceki</button>
             <div class="info-area">
-                <h3 id="urunAdi">Model Seçiliyor...</h3>
+                <h3 id="urunAdi">Hazırlanıyor...</h3>
                 <p id="urunOlcu">...</p>
             </div>
             <button class="nav-btn" onclick="degistir(1)">Sonraki ➡</button>
@@ -64,14 +61,17 @@
         const isimText = document.getElementById('urunAdi');
         const olcuText = document.getElementById('urunOlcu');
         const loadingScreen = document.getElementById('loading-screen');
+        const loadingText = document.getElementById('loading-text');
 
-        // Safari'nin Güvenliğini Delen CDN Hilesi
+        // Kurşun Geçirmez CDN Çevirici (Main/Master Fark Etmez)
         function cdnLinkYap(orijinalUrl) {
-            // raw.githubusercontent adresini, güvenli jsDelivr adresine çevirir
             if(orijinalUrl.includes("raw.githubusercontent.com")) {
-                let yeniUrl = orijinalUrl.replace("raw.githubusercontent.com", "cdn.jsdelivr.net/gh");
-                yeniUrl = yeniUrl.replace("/main/", "@main/");
-                return yeniUrl;
+                let parcalar = orijinalUrl.split('/');
+                let kullanici = parcalar[3];
+                let repo = parcalar[4];
+                let branch = parcalar[5]; // main veya master
+                let yol = parcalar.slice(6).join('/');
+                return `https://cdn.jsdelivr.net/gh/${kullanici}/${repo}@${branch}/${yol}`;
             }
             return orijinalUrl;
         }
@@ -80,38 +80,46 @@
             if (vitrin.length === 0) {
                 loadingScreen.style.display = 'none';
                 isimText.innerText = "Vitrin Boş";
-                olcuText.innerText = "Esnaf ürün yüklemedi.";
+                olcuText.innerText = "Panelden ürün yükleyin.";
                 return;
             }
 
-            loadingScreen.style.display = 'flex'; // Yükleniyor ekranını aç
+            loadingScreen.style.display = 'flex';
+            loadingText.innerText = "Halı Dokunuyor...";
+            
             const urun = vitrin[index];
             isimText.innerText = `Ürün ${index + 1} / ${vitrin.length}`;
             olcuText.innerText = `Ölçü: ${urun.en}x${urun.boy} cm`;
 
-            // 1. Ölçüyü Halı Ebatına (İncecik) Getir
+            // Halı Ebatını Ayarla (Kalınlık 1 santim)
             mv.scale = `${urun.en / 100} 0.01 ${urun.boy / 100}`;
 
             try {
-                // Güvenli CDN linkini oluştur
+                // 1. Güvenli Linki Al
                 const guvenliLink = cdnLinkYap(urun.url);
 
-                // Resmi çekip dokuya çevir (Safari artık engellemeyecek)
-                const texture = await mv.createTexture(guvenliLink);
+                // 2. Apple'ı Tamamen Kandıran Hile (Resmi İndirip Paketliyoruz)
+                const resimCevap = await fetch(guvenliLink);
+                if(!resimCevap.ok) throw new Error("GitHub resmi henüz onaylamadı (10 sn bekleyin)");
+                
+                const resimBlob = await resimCevap.blob();
+                const sahteLink = URL.createObjectURL(resimBlob);
+
+                // 3. Halının Üzerine Sür
+                const texture = await mv.createTexture(sahteLink);
                 const material = mv.model.materials[0];
                 material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
                 material.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]); 
                 
-                loadingScreen.style.display = 'none'; // Yükleniyor ekranını kapat
+                // Başarılı! Yükleme ekranını kapat.
+                loadingScreen.style.display = 'none';
 
             } catch (error) {
-                console.error("Doku hatası:", error);
-                olcuText.innerText = "Resim yüklenemedi. Lütfen sayfayı yenileyin.";
-                loadingScreen.style.display = 'none';
+                console.error("Hata Detayı:", error);
+                loadingText.innerText = "Resim GitHub'dan bekleniyor... Lütfen sayfayı yenileyin.";
             }
         }
 
-        // Sağ-Sol Kaydırma
         window.degistir = function(yon) {
             if (vitrin.length === 0) return;
             aktifIndex += yon;
@@ -120,7 +128,7 @@
             haliyiYukle(aktifIndex);
         }
 
-        // Sayfa açılınca, Model Viewer'ın "hazır" olmasını bekle ve halıyı bas
+        // Model Viewer hazır olduğunda tetikle
         mv.addEventListener('load', () => {
             haliyiYukle(aktifIndex);
         });
