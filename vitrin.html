@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanal Keşif | Müşteri Vitrini</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #fafafa; }
+        
+        /* 3D Ürün Alanı */
+        model-viewer { width: 100vw; height: 100vh; outline: none; }
+        
+        /* Alt Kontrol Paneli */
+        .ui-panel { position: absolute; bottom: 0; width: 100%; background: white; padding: 25px 20px; border-radius: 25px 25px 0 0; box-shadow: 0 -10px 25px rgba(0,0,0,0.1); box-sizing: border-box; z-index: 10; }
+        
+        /* Kaydırma ve Bilgi */
+        .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .nav-btn { background: #f0f0f0; border: none; padding: 12px 20px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; color: #333; }
+        .nav-btn:active { background: #e0e0e0; }
+        .info-area { text-align: center; }
+        .info-area h3 { margin: 0; font-size: 18px; color: #111; }
+        .info-area p { margin: 5px 0 0 0; font-size: 14px; color: #666; font-weight: bold; }
+        
+        /* Sihirli AR Butonu */
+        .ar-btn { background: #1a1a1a; color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+
+    <model-viewer id="rugViewer"
+        src="https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Box/glTF-Binary/Box.glb"
+        ar ar-modes="webxr scene-viewer quick-look"
+        camera-controls shadow-intensity="1.5" auto-rotate>
+    </model-viewer>
+
+    <div class="ui-panel">
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="degistir(-1)">⬅ Önceki</button>
+            <div class="info-area">
+                <h3 id="urunAdi">Yükleniyor...</h3>
+                <p id="urunOlcu">Lütfen Bekleyin</p>
+            </div>
+            <button class="nav-btn" onclick="degistir(1)">Sonraki ➡</button>
+        </div>
+        <button class="ar-btn" onclick="document.querySelector('#rugViewer').activateAR()">Evimde Gör (Kamerayı Aç)</button>
+    </div>
+
+    <script>
+        // Esnafın panelden yüklediği listeyi çek
+        const vitrin = JSON.parse(localStorage.getItem('bunkervanVitrin')) || [];
+        let aktifIndex = 0;
+        
+        const mv = document.getElementById('rugViewer');
+        const isimText = document.getElementById('urunAdi');
+        const olcuText = document.getElementById('urunOlcu');
+
+        // Halıyı Ekrana Boyayan Ana Fonksiyon
+        async function haliyiYukle(index) {
+            if (vitrin.length === 0) {
+                isimText.innerText = "Vitrin Boş";
+                olcuText.innerText = "Esnaf henüz ürün yüklemedi.";
+                return;
+            }
+
+            const urun = vitrin[index];
+            isimText.innerText = `Model ${index + 1} / ${vitrin.length}`;
+            olcuText.innerText = `Ölçü: ${urun.en}x${urun.boy} cm`;
+
+            // 1. KÜPÜ HALIYA ÇEVİR: En ve Boy'u metreye çevir, yüksekliği 2 santim (0.02) yap.
+            mv.scale = `${urun.en / 100} 0.02 ${urun.boy / 100}`;
+
+            // 2. RESMİ ÜZERİNE SÜR: JPG'yi alıp 3D dokuya çeviriyoruz.
+            try {
+                const material = mv.model.materials[0];
+                const texture = await mv.createTexture(urun.url);
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+                // Renklerin patlamaması için baz rengi beyaz yapıyoruz
+                material.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]); 
+            } catch (error) {
+                console.log("Resim yüklenirken ufak bir gecikme oldu.");
+            }
+        }
+
+        // Sağ-Sol Kaydırma Mantığı
+        window.degistir = function(yon) {
+            if (vitrin.length === 0) return;
+            aktifIndex += yon;
+            
+            // Listenin sonuna gelince başa dön
+            if (aktifIndex >= vitrin.length) aktifIndex = 0; 
+            if (aktifIndex < 0) aktifIndex = vitrin.length - 1; 
+            
+            haliyiYukle(aktifIndex);
+        }
+
+        // Sayfa açıldığında ilk ürünü yükle
+        mv.addEventListener('load', () => {
+            haliyiYukle(aktifIndex);
+        });
+    </script>
+
+</body>
+</html>
