@@ -50,7 +50,6 @@
         }
         .upload-box:hover { border-color: var(--accent-color); background: #f0f7ff; }
 
-        /* Çirkin Dosya Butonunu Gizleyip Şık Label Yapma */
         input[type="file"] { display: none; }
         .custom-file-upload {
             display: inline-block;
@@ -98,7 +97,6 @@
         }
         button.btn-add:active { transform: scale(0.95); background: #000; }
 
-        /* Yükleniyor Uyarısı */
         #statusText { color: var(--accent-color); font-weight: 700; font-size: 14px; margin-top: 15px; display: none; }
 
         /* Vitrin Listesi */
@@ -122,11 +120,10 @@
         .product-details span.title { font-weight: 800; color: var(--primary-color); font-size: 15px;}
         .product-details span.size { font-weight: 500; color: var(--text-muted); font-size: 13px; margin-top: 2px;}
         
-        /* Butonlar */
         button.btn-delete { background: #ffeaa7; color: #d63031; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 13px; transition: 0.2s; }
         button.btn-delete:hover { background: #ff7675; color: white; }
         
-        .action-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .action-buttons { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;}
         
         button.btn-share { 
             background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); 
@@ -140,7 +137,48 @@
             background: #f1f2f6; color: #636e72; border: none; padding: 16px; width: 100%; 
             border-radius: 14px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s;
         }
-        button.btn-clear-all:active { background: #dfe4ea; }
+
+        /* YENİ: ARŞİV (KÜTÜPHANE) BÖLÜMÜ */
+        .archive-section { 
+            border-top: 2px dashed #e1e2e6; 
+            padding-top: 25px; 
+            display: none; 
+        }
+        .archive-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px; 
+        }
+        .archive-header h3 { margin: 0; font-size: 16px; color: var(--primary-color); font-weight: 800; }
+        .archive-badge { background: var(--accent-color); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        
+        .archive-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); 
+            gap: 12px; 
+        }
+        .archive-item { 
+            position: relative; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            cursor: pointer; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+        .archive-item:hover { border-color: var(--accent-color); transform: scale(1.05); }
+        .archive-item img { width: 100%; height: 80px; object-fit: cover; display: block; }
+        
+        .archive-overlay { 
+            position: absolute; inset: 0; 
+            background: rgba(0,0,0,0.6); 
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-weight: 800; font-size: 28px; 
+            opacity: 0; transition: 0.2s;
+        }
+        .archive-item:hover .archive-overlay { opacity: 1; }
+
     </style>
 </head>
 <body>
@@ -150,9 +188,7 @@
     <div class="subtitle">Premium Esnaf Paneli</div>
 
     <div class="upload-box">
-        <label for="fileInput" class="custom-file-upload">
-            📸 Halı Fotoğrafı Seç
-        </label>
+        <label for="fileInput" class="custom-file-upload">📸 Yeni Halı Fotoğrafı Seç</label>
         <input type="file" id="fileInput" accept="image/jpeg, image/png, image/webp" onchange="dosyaSecildi(this)">
         <span id="fileNameDisplay">Henüz fotoğraf seçilmedi</span>
         
@@ -164,8 +200,7 @@
         <p id="statusText">İşlem Yapılıyor... ⏳</p>
     </div>
 
-    <div class="product-list" id="productList">
-        </div>
+    <div class="product-list" id="productList"></div>
 
     <div class="action-buttons">
         <button id="shareBtn" class="btn-share" style="display: none;" onclick="vitriniPaylas()">
@@ -176,14 +211,22 @@
         </button>
         <button class="btn-clear-all" onclick="tumunuTemizle()">Tüm Vitrini Temizle</button>
     </div>
+
+    <div class="archive-section" id="archiveSection">
+        <div class="archive-header">
+            <h3>☁️ Bulut Arşivi (Önceki Halılar)</h3>
+            <span class="archive-badge" id="archiveCount">0</span>
+        </div>
+        <p style="font-size:12px; color:#777; margin-top:-10px; margin-bottom:15px;">Vitrine tekrar eklemek için resme tıklayıp ölçü girin.</p>
+        <div class="archive-grid" id="archiveGrid">
+            </div>
+    </div>
 </div>
 
 <script>
-    // --- BİLGİLERİNİ BURAYA GİR (SADECE BUNLARI DEĞİŞTİR) ---
+    // --- BİLGİLERİN GÖMÜLÜ ---
     const KULLANICI = "fthlabz"; 
     const REPO = "sanal-kesif"; 
-    
-    // Güvenli Token Birleşimi
     const token1 = "ghp_";
     const token2 = "dm7qeynDwgjzBO5uOg02AFW4OhXZXH1cMdUG"; 
     const githubToken = token1 + token2;
@@ -191,25 +234,96 @@
 
     let vitrin = [];
 
-    // Dosya seçildiğinde ismini ekrana şıkça yazma
     function dosyaSecildi(input) {
         const isim = input.files.length > 0 ? input.files[0].name : "Henüz fotoğraf seçilmedi";
         document.getElementById('fileNameDisplay').innerText = "Seçilen: " + isim;
     }
 
-    // 1. AŞAMA: Sistem açıldığında GitHub'daki Bulut JSON'u (Defteri) okur
-    async function defteriOku() {
+    // 1. AŞAMA: Sistemi Başlat (Defteri Oku, Sonra Arşivi Tar)
+    async function sistemiBaslat() {
         try {
             const cevap = await fetch(`https://raw.githubusercontent.com/${KULLANICI}/${REPO}/main/vitrin.json?t=${Date.now()}`);
-            if (cevap.ok) {
-                vitrin = await cevap.json();
-                vitriniCiz();
-            }
+            if (cevap.ok) { vitrin = await cevap.json(); vitriniCiz(); }
         } catch (e) { console.log("İlk defa defter oluşturulacak."); }
+        
+        // Vitrini çizdikten sonra depodaki boşta duran resimleri bul
+        arsiviGetir();
     }
-    defteriOku();
+    sistemiBaslat();
 
-    // 2. AŞAMA: Yeni resmi HD Optimize edip (1500px) buluta yükleme Motoru
+    // 2. YENİ AŞAMA: GitHub Klasörünü Tara ve Arşivi Getir
+    async function arsiviGetir() {
+        try {
+            const cevap = await fetch(`https://api.github.com/repos/${KULLANICI}/${REPO}/contents/images`, {
+                headers: { 'Authorization': `token ${githubToken}` }
+            });
+            
+            if (cevap.ok) {
+                const dosyalar = await cevap.json();
+                
+                // Vitrinde AKTİF olarak bulunan resimlerin linklerini al
+                const vitrinUrlleri = vitrin.map(u => u.url);
+                
+                // Klasördeki resimlerden, vitrinde OLMAYANLARI filtrele (İşte bu arşivdir)
+                const arsivDosyalari = dosyalar.filter(d => 
+                    (d.name.endsWith('.jpg') || d.name.endsWith('.png') || d.name.endsWith('.webp')) && 
+                    !vitrinUrlleri.includes(d.download_url)
+                );
+                
+                arsiviCiz(arsivDosyalari);
+            }
+        } catch (e) { console.log("Arşiv taranamadı."); }
+    }
+
+    // Arşivdeki resimleri ekrana küçük kutular halinde çiz
+    function arsiviCiz(dosyalar) {
+        const grid = document.getElementById('archiveGrid');
+        const section = document.getElementById('archiveSection');
+        
+        if(dosyalar.length === 0) {
+            section.style.display = 'none'; // Arşiv boşsa gizle
+            return;
+        }
+        
+        section.style.display = 'block';
+        document.getElementById('archiveCount').innerText = dosyalar.length;
+        grid.innerHTML = "";
+        
+        // Klasördeki her bir boşta duran resmi ekrana bas
+        dosyalar.forEach(dosya => {
+            grid.innerHTML += `
+                <div class="archive-item" onclick="arsivdenVitrineEkle('${dosya.download_url}')">
+                    <img src="${dosya.download_url}" loading="lazy">
+                    <div class="archive-overlay">+</div>
+                </div>
+            `;
+        });
+    }
+
+    // 3. YENİ AŞAMA: Arşivdeki resme tıklayınca tekrar Vitrine (JSON'a) Ekle
+    async function arsivdenVitrineEkle(url) {
+        if (vitrin.length >= 50) { alert("Maksimum 50 ürüne ulaştınız!"); return; }
+        
+        // Esnaftan ölçüleri iste
+        const en = prompt("Bu halının EN ölçüsü nedir? (cm):");
+        if (!en) return; // İptal ederse çık
+        const boy = prompt("Bu halının BOY ölçüsü nedir? (cm):");
+        if (!boy) return;
+
+        const statusText = document.getElementById('statusText');
+        statusText.style.display = "block";
+        statusText.innerText = "Arşivden Vitrine Alınıyor... ⏳";
+
+        // Yeni internet harcamadan, var olan linki deftere yaz
+        vitrin.push({ id: Date.now(), url: url, en: en, boy: boy });
+        await jsonGuncelle(vitrin);
+        
+        statusText.style.display = "none";
+        vitriniCiz();
+        arsiviGetir(); // Arşivi yenile (eklenen resim arşivden düşsün)
+    }
+
+    // 4. AŞAMA: Bilgisayardan / Telefondan Sıfırdan Yeni Resim Yükleme (HD Motoru)
     async function urunuYukle() {
         if (vitrin.length >= 50) { alert("Maksimum 50 ürüne ulaştınız!"); return; }
 
@@ -223,21 +337,19 @@
         statusText.style.display = "block";
         statusText.innerText = "HD Optimizasyon Yapılıyor... ⏳";
 
-        // Resmi Tuvale (Canvas) Alma İşlemi
         const url = URL.createObjectURL(file);
         const img = new Image();
         img.src = url;
 
         img.onload = async function() {
-            URL.revokeObjectURL(url); // Belleği temizle
+            URL.revokeObjectURL(url); 
             
             const canvas = document.createElement('canvas');
-            const MAX_BOYUT = 1500; // Altın Oran (Telefonları dondurmayan en net boyut)
+            const MAX_BOYUT = 1500; 
             
             let width = img.width;
             let height = img.height;
 
-            // Boyutlandırma Mantığı (En-Boy oranını koruyarak)
             if (width > height) {
                 if (width > MAX_BOYUT) { height = Math.round(height * (MAX_BOYUT / width)); width = MAX_BOYUT; }
             } else {
@@ -248,19 +360,16 @@
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             
-            // Resmi Pürüzsüzleştir ve Çiz
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = "high";
             ctx.drawImage(img, 0, 0, width, height);
 
-            // %85 Kalitede JPEG olarak sıkıştır (Base64 Formatında)
             const base64Content = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
             const dosyaAdi = "hali_HD_" + Date.now() + ".jpg"; 
 
             statusText.innerText = "Buluta Kaydediliyor... ☁️";
 
             try {
-                // GitHub'a Gönder
                 const resimCevap = await fetch(`https://api.github.com/repos/${KULLANICI}/${REPO}/contents/images/${dosyaAdi}`, {
                     method: 'PUT',
                     headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
@@ -270,19 +379,19 @@
                 if (resimCevap.ok) {
                     const resimVeri = await resimCevap.json();
                     
-                    // Listeye ekle ve Defteri Güncelle
                     vitrin.push({ id: Date.now(), url: resimVeri.content.download_url, en: en, boy: boy });
                     await jsonGuncelle(vitrin);
                     
-                    // Ekranı temizle
                     statusText.style.display = "none";
                     document.getElementById('fileInput').value = "";
                     document.getElementById('fileNameDisplay').innerText = "Henüz fotoğraf seçilmedi";
                     document.getElementById('enInput').value = "";
                     document.getElementById('boyInput').value = "";
+                    
                     vitriniCiz();
+                    arsiviGetir(); // Yeni resim yüklendiğinde arşivi de tetikle
                 } else {
-                    alert("Yükleme hatası! Şifrenizi (Token) veya Depo adınızı kontrol edin.");
+                    alert("Yükleme hatası! Şifrenizi (Token) kontrol edin.");
                     statusText.style.display = "none";
                 }
             } catch (error) { 
@@ -290,13 +399,8 @@
                 statusText.style.display = "none"; 
             }
         };
-        img.onerror = function() {
-            alert("Lütfen geçerli bir resim dosyası seçin.");
-            statusText.style.display = "none";
-        };
     }
 
-    // Ekrandaki şık listeyi çizer
     function vitriniCiz() {
         const listeDiv = document.getElementById('productList');
         listeDiv.innerHTML = "";
@@ -316,30 +420,28 @@
             `;
         });
 
-        // Ürün varsa WhatsApp butonunu göster
         document.getElementById('shareBtn').style.display = vitrin.length > 0 ? "flex" : "none";
     }
 
-    // Ürün Silme
     async function urunuSil(id) {
-        if (confirm("Bu halıyı vitrinden silmek istediğinize emin misiniz?")) {
+        if (confirm("Bu halıyı vitrinden kaldırmak istediğinize emin misiniz? (Arşive eklenecek)")) {
             vitrin = vitrin.filter(u => u.id !== id);
             await jsonGuncelle(vitrin);
             vitriniCiz();
+            arsiviGetir(); // Silinen ürün anında arşive düşsün
         }
     }
 
-    // Tümünü Temizle
     async function tumunuTemizle() {
         if (vitrin.length === 0) return;
-        if (confirm("DİKKAT! Tüm vitrin temizlenecek. Emin misiniz?")) {
+        if (confirm("DİKKAT! Vitrindeki tüm halılar arşive kaldırılacak. Emin misiniz?")) {
             vitrin = [];
             await jsonGuncelle(vitrin);
             vitriniCiz();
+            arsiviGetir();
         }
     }
 
-    // GitHub JSON (Merkezi Defter) Güncelleme Motoru
     async function jsonGuncelle(yeniListe) {
         const path = "vitrin.json";
         const url = `https://api.github.com/repos/${KULLANICI}/${REPO}/contents/${path}`;
@@ -358,7 +460,6 @@
         });
     }
 
-    // Müşteriye WhatsApp'tan Jilet Gibi Link Atma
     function vitriniPaylas() {
         const musteriLinki = `https://${KULLANICI}.github.io/${REPO}/vitrin.html`;
         const mesaj = `Merhaba! Beğendiğiniz halıları evinizde (Sanal Keşif ile) görmek için aşağıdaki linke tıklayabilirsiniz:\n\n👉 ${musteriLinki}`;
