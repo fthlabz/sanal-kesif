@@ -27,7 +27,6 @@
             outline: none;
         }
 
-        /* --- ÜST BİLGİ PANELİ --- */
         .ust-panel {
             position: absolute;
             top: 40px;
@@ -69,7 +68,6 @@
         .bilgi-merkez h3 { margin: 0; font-size: 17px; font-weight: 700; color: var(--koyu-renk); letter-spacing: -0.5px; }
         .bilgi-merkez p { margin: 4px 0 0 0; font-size: 13px; font-weight: 500; color: #8e8e93; }
 
-        /* --- PREMIUM AR BUTONU --- */
         .premium-ar-buton {
             position: absolute;
             bottom: 50px;
@@ -97,7 +95,6 @@
         .premium-ar-buton:active { background: #000; }
         .premium-ar-buton svg { width: 22px; height: 22px; fill: none; stroke: white; stroke-width: 2; }
 
-        /* --- YÜKLEME EKRANI --- */
         #yukleniyor {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: #f5f5f7; display: flex; flex-direction: column;
@@ -153,24 +150,16 @@
     </div>
 
     <script>
-        // --- SENİN GITHUB BİLGİLERİN ---
         const KULLANICI = "fthlabz";
-        // Repo adını senin istediğin gibi küçük harf yaptım
-        const REPO = "sanal-kesif"; 
+        const REPO = "sanal-kesif"; // Küçük harfle düzelttim
 
         let vitrin = [];
         let aktifIndex = 0;
         const mv = document.getElementById('hali-gosterici');
         const yukleniyorEkrani = document.getElementById('yukleniyor');
 
-        // Uçmayı engelleyen özel zemin dosyası
-        const BASE_MODEL = "https://cdn.glitch.global/2a39a797-1563-47cb-9580-60b6b29d9366/plane_thin.glb?v=1648582345000";
-
         async function vitriniGetir() {
             try {
-                // Önce uçmayan modeli yükle
-                mv.src = BASE_MODEL;
-
                 const cevap = await fetch(`https://raw.githubusercontent.com/${KULLANICI}/${REPO}/main/vitrin.json?t=${Date.now()}`);
                 if (cevap.ok) {
                     vitrin = await cevap.json();
@@ -178,9 +167,12 @@
                 } else {
                     document.getElementById('urun-adi').innerText = "Hata!";
                     document.getElementById('urun-olcu').innerText = "Veri Bulunamadı";
-                    yukleniyorEkrani.style.display = 'none';
+                    yukleniyorEkrani.style.display = 'none'; // Hata olursa ekranı kapat
                 }
-            } catch (e) { console.error("JSON okuma hatası", e); }
+            } catch (e) { 
+                console.error("JSON okuma hatası", e); 
+                yukleniyorEkrani.style.display = 'none';
+            }
         }
 
         async function haliyiBas(index) {
@@ -192,7 +184,7 @@
             document.getElementById('urun-adi').innerText = `Model ${index + 1} / ${vitrin.length}`;
             document.getElementById('urun-olcu').innerText = `${urun.en} x ${urun.boy} cm`;
             
-            // X ve Z ölçülerini verirken Y'yi (0.01) ince tutuyoruz ki halı gibi görünsün
+            // X ve Z gerçek boyutta, Y (kalınlık) 0.01 yapıldı
             mv.scale = `${urun.en / 100} 0.01 ${urun.boy / 100}`;
 
             try {
@@ -200,12 +192,7 @@
                 const material = mv.model.materials[0];
                 material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
                 material.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
-                
-                // Yükleme bitince ekranı kapat
-                setTimeout(() => {
-                    yukleniyorEkrani.style.display = 'none';
-                }, 500);
-
+                yukleniyorEkrani.style.display = 'none';
             } catch (error) { 
                 console.log("Doku yüklenemedi", error);
                 yukleniyorEkrani.style.display = 'none';
