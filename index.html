@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sanal Keşif | fthlabz</title>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         :root {
             --cam-arkaplan: rgba(255, 255, 255, 0.85);
@@ -122,14 +122,9 @@
     </div>
 
     <model-viewer id="hali-gosterici"
-        src="https://cdn.glitch.global/2a39a797-1563-47cb-9580-60b6b29d9366/plane_thin.glb?v=1648582345000"
-        ar 
-        ar-modes="scene-viewer webxr quick-look"
-        ar-placement="floor"
-        camera-controls 
-        shadow-intensity="1" 
-        auto-rotate 
-        exposure="1">
+        src="https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/BoxTextured/glTF-Binary/BoxTextured.glb"
+        ar ar-modes="webxr scene-viewer quick-look"
+        camera-controls shadow-intensity="1.5" auto-rotate exposure="1">
         
         <button slot="ar-button" class="premium-ar-buton">
             <svg viewBox="0 0 24 24"><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3M10 12h4"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -155,7 +150,7 @@
     <script>
         // --- SENİN GITHUB BİLGİLERİN ---
         const KULLANICI = "fthlabz";
-        // DİKKAT: Küçük harfle düzelttim.
+        // DİKKAT: Depo adın tam olarak neyse aşağıya onu yazmalısın. (Örn: Sanal-Kesif)
         const REPO = "sanal-kesif"; 
 
         let vitrin = [];
@@ -163,14 +158,8 @@
         const mv = document.getElementById('hali-gosterici');
         const yukleniyorEkrani = document.getElementById('yukleniyor');
 
-        // Uçmayı engelleyen özel zemin dosyası (Yedek Link)
-        const BASE_MODEL = "https://cdn.glitch.global/2a39a797-1563-47cb-9580-60b6b29d9366/plane_thin.glb?v=1648582345000";
-
         async function vitriniGetir() {
             try {
-                // Önce base modeli yükle
-                mv.src = BASE_MODEL;
-
                 const cevap = await fetch(`https://raw.githubusercontent.com/${KULLANICI}/${REPO}/main/vitrin.json?t=${Date.now()}`);
                 if (cevap.ok) {
                     vitrin = await cevap.json();
@@ -178,7 +167,6 @@
                 } else {
                     document.getElementById('urun-adi').innerText = "Hata!";
                     document.getElementById('urun-olcu').innerText = "Veri Bulunamadı";
-                    yukleniyorEkrani.style.display = 'none'; // Hata olsa da ekranı aç
                 }
             } catch (e) { console.error("JSON okuma hatası", e); }
         }
@@ -191,10 +179,6 @@
             
             document.getElementById('urun-adi').innerText = `Model ${index + 1} / ${vitrin.length}`;
             document.getElementById('urun-olcu').innerText = `${urun.en} x ${urun.boy} cm`;
-
-            // YÜKSEKLİK AYARI (Uçmayı Önler):
-            // Yüksekliği (Y) 0.01 gibi çok ince tutuyoruz.
-            // BoxTextured yerine plane_thin kullandığımız için merkez noktası altta kalır.
             mv.scale = `${urun.en / 100} 0.01 ${urun.boy / 100}`;
 
             try {
@@ -202,12 +186,7 @@
                 const material = mv.model.materials[0];
                 material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
                 material.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
-                
-                // Texture yüklendiğinde yükleme ekranını kapat
-                setTimeout(() => {
-                    yukleniyorEkrani.style.display = 'none';
-                }, 500);
-
+                yukleniyorEkrani.style.display = 'none';
             } catch (error) { 
                 console.log("Doku yüklenemedi", error);
                 yukleniyorEkrani.style.display = 'none';
