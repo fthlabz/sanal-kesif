@@ -3,310 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yönetim Paneli | Pro</title>
+    <title>Yönetim Paneli | Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #09090b;
-            --card-bg: #18181b;
-            --input-bg: #27272a;
+            --bg: #09090b;
+            --card: #18181b;
+            --input: #27272a;
             --border: #3f3f46;
-            --primary: #ffffff;
-            --accent: #3b82f6; /* Premium Mavi */
+            --text: #ffffff;
+            --accent: #2563eb;
             --danger: #ef4444;
-            --success: #10b981;
         }
-
-        * { box-sizing: border-box; }
 
         body { 
             font-family: 'Inter', sans-serif; 
-            background: var(--bg-dark);
-            color: var(--primary);
+            background: var(--bg); color: var(--text);
             margin: 0; padding: 20px 15px;
-            -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
 
-        .container { 
-            max-width: 500px; margin: 0 auto; 
-            padding-bottom: 80px;
-        }
-
-        h2 { text-align: center; margin: 10px 0 5px; font-size: 24px; letter-spacing: -0.5px; }
+        .container { max-width: 550px; margin: 0 auto; padding-bottom: 60px; }
+        
+        h2 { text-align: center; margin: 0 0 5px; font-size: 22px; }
         .subtitle { text-align: center; color: #a1a1aa; font-size: 13px; margin-bottom: 25px; }
 
-        /* --- FOTOĞRAF ALANI (DÜZELTİLDİ) --- */
-        .file-wrapper {
-            position: relative;
-            background: var(--card-bg);
-            border: 2px dashed var(--border);
-            border-radius: 16px;
-            height: 180px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            cursor: pointer; overflow: hidden;
-            transition: 0.2s;
-            margin-bottom: 25px;
+        /* --- FOTOĞRAF YÜKLEME --- */
+        .upload-area {
+            background: var(--card); border: 2px dashed var(--border);
+            border-radius: 16px; padding: 20px; text-align: center;
+            margin-bottom: 20px; position: relative;
         }
-        .file-wrapper:active { background: #202022; border-color: var(--accent); }
         
-        /* Gizli Input */
-        #fileInput { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            opacity: 0; cursor: pointer; z-index: 10;
+        /* Gizli Input ama tıklanabilir alan */
+        .file-trigger {
+            display: block; padding: 30px 0; cursor: pointer;
         }
-
-        .icon-box { font-size: 40px; margin-bottom: 10px; }
-        #fileName { font-size: 14px; font-weight: 500; color: #a1a1aa; pointer-events: none; }
-        #previewImg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; display: none; z-index: 1; opacity: 0.6;
-        }
-
-        /* --- FORM --- */
-        .form-group { display: flex; flex-direction: column; gap: 15px; }
+        #fileInput { display: none; }
         
-        .input-label { 
-            font-size: 11px; font-weight: 700; color: #71717a; 
-            text-transform: uppercase; margin-bottom: 5px; display: block;
+        #previewBox {
+            width: 100px; height: 100px; object-fit: cover; 
+            border-radius: 10px; margin: 10px auto; display: none; border: 2px solid var(--accent);
         }
 
+        /* --- FORMLAR --- */
+        .input-stack { display: flex; flex-direction: column; gap: 12px; }
+        
         input { 
             width: 100%; padding: 14px; 
-            background: var(--input-bg);
-            border: 1px solid var(--border); 
-            border-radius: 12px; 
-            font-size: 15px; color: white;
-            outline: none; transition: 0.2s;
+            background: var(--input); border: 1px solid var(--border);
+            border-radius: 10px; color: white; font-size: 15px;
+            box-sizing: border-box; /* Taşmayı engeller */
         }
-        input:focus { border-color: var(--accent); }
+        input:focus { border-color: var(--accent); outline: none; }
 
-        .row { display: flex; gap: 12px; }
-        .col { flex: 1; }
+        .row { display: flex; gap: 10px; }
+        .row input { flex: 1; }
 
-        /* --- BUTONLAR --- */
-        .btn-save {
-            width: 100%; padding: 16px; border: none; border-radius: 12px;
-            background: var(--accent); color: white;
-            font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+        .btn-main {
+            width: 100%; padding: 16px; margin-top: 15px;
+            background: var(--accent); color: white; border: none;
+            border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer;
         }
-        .btn-save:active { transform: scale(0.98); }
+        .btn-main:active { opacity: 0.9; }
 
-        /* --- LİSTE --- */
-        .list-header { 
+        /* --- LİSTE TASARIMI --- */
+        .section-header { 
             margin-top: 40px; border-bottom: 1px solid var(--border); 
-            padding-bottom: 10px; margin-bottom: 15px; font-weight: 600;
+            padding-bottom: 10px; margin-bottom: 15px; font-weight: 600; font-size: 16px;
         }
 
         .item { 
-            background: var(--card-bg); padding: 12px; border-radius: 12px;
+            background: var(--card); padding: 10px; border-radius: 12px;
             display: flex; align-items: center; justify-content: space-between;
             margin-bottom: 10px; border: 1px solid var(--border);
         }
         .item-left { display: flex; align-items: center; gap: 12px; }
         .item-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #333; }
-        .item-info h4 { margin: 0; font-size: 14px; color: white; }
+        .item-info h4 { margin: 0; font-size: 14px; }
         .item-info p { margin: 2px 0 0; font-size: 12px; color: #a1a1aa; }
         
         .btn-del { 
             background: rgba(239, 68, 68, 0.2); color: var(--danger);
-            border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+            border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold;
         }
 
-        /* --- Yükleme Barı --- */
-        #loadingBar {
-            height: 4px; background: var(--accent); width: 0%; 
-            position: fixed; top: 0; left: 0; transition: 0.3s; z-index: 999;
+        /* --- ARŞİV GRID --- */
+        .archive-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
         }
+        .archive-item {
+            position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden;
+            border: 2px solid transparent; cursor: pointer;
+        }
+        .archive-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.2s; }
+        .archive-item:hover img { opacity: 1; }
+        .archive-tag {
+            position: absolute; bottom: 0; left: 0; right: 0; 
+            background: rgba(37, 99, 235, 0.9); color: white; 
+            font-size: 10px; text-align: center; padding: 4px;
+        }
+
+        #status { text-align: center; color: var(--accent); margin-top: 10px; font-size: 13px; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="loadingBar"></div>
+<div class="container">
+    <h2>Mağaza Paneli</h2>
+    <div class="subtitle">Vitrin Yönetimi & Arşiv</div>
 
-    <div class="container">
-        <h2>Yönetim Paneli</h2>
-        <div class="subtitle">Ürün ve İçerik Kontrolü</div>
-
-        <div class="file-wrapper">
-            <input type="file" id="fileInput" accept="image/*" onchange="previewFile()">
-            <img id="previewImg">
-            <div style="z-index: 2; text-align: center;">
-                <div class="icon-box">📸</div>
-                <div id="fileName">Fotoğraf Seçmek İçin Dokun</div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div>
-                <span class="input-label">Ürün Adı</span>
-                <input type="text" id="name" placeholder="Örn: Klasik Gri Halı">
-            </div>
-
+    <div class="upload-area">
+        <label class="file-trigger" for="fileInput">
+            <span style="font-size: 24px;">📸</span><br>
+            <span id="fileLabel" style="color:#a1a1aa; font-size:14px;">Fotoğraf Seçmek İçin Tıkla</span>
+        </label>
+        <input type="file" id="fileInput" accept="image/*" onchange="resimSecildi()">
+        <img id="previewBox">
+        
+        <div class="input-stack">
+            <input type="text" id="name" placeholder="Ürün Adı (Örn: Gri Halı)">
             <div class="row">
-                <div class="col">
-                    <span class="input-label">Fiyat (TL)</span>
-                    <input type="number" id="price" placeholder="12500">
-                </div>
-                <div class="col">
-                    <span class="input-label">Stok Kodu</span>
-                    <input type="text" id="sku" placeholder="KOD-01">
-                </div>
+                <input type="number" id="price" placeholder="Fiyat (TL)">
+                <input type="text" id="sku" placeholder="Stok Kodu">
             </div>
-
             <div class="row">
-                <div class="col">
-                    <span class="input-label">En (cm)</span>
-                    <input type="number" id="width" placeholder="160">
-                </div>
-                <div class="col">
-                    <span class="input-label">Boy (cm)</span>
-                    <input type="number" id="height" placeholder="230">
-                </div>
+                <input type="number" id="width" placeholder="En (cm)">
+                <input type="number" id="height" placeholder="Boy (cm)">
             </div>
-
-            <div>
-                <span class="input-label">Koleksiyon</span>
-                <input type="text" id="collection" placeholder="Örn: Vintage">
-            </div>
-
-            <button class="btn-save" onclick="uploadProduct()">✨ Vitrine Ekle</button>
-            <p id="statusMsg" style="text-align: center; font-size: 13px; color: #a1a1aa; margin-top: 10px; display: none;">...</p>
+            <input type="text" id="coll" placeholder="Koleksiyon">
+            
+            <button class="btn-main" onclick="urunuYukle()">✨ Vitrine Ekle</button>
+            <div id="status">İşlem yapılıyor...</div>
         </div>
-
-        <div class="list-header">Aktif Vitrin</div>
-        <div id="productList">Yükleniyor...</div>
     </div>
 
+    <div class="section-header">Yayındaki Ürünler</div>
+    <div id="activeList">Yükleniyor...</div>
+
+    <div class="section-header">☁️ Arşiv (Geri Yükle)</div>
+    <p style="font-size:12px; color:#666; margin-bottom:10px;">Vitrinden sildiğin ürünler resim olarak burada kalır. Tekrar eklemek için resme tıkla.</p>
+    <div id="archiveGrid" class="archive-grid"></div>
+</div>
+
 <script>
-    // --- AYARLAR ---
+    // --- AYARLAR (TOKENİ BURAYA YAZ) ---
     const USER = "fthlabz"; 
     const REPO = "sanal-kesif"; 
-    // TOKEN BURAYA
     const t1 = "ghp_"; 
-    const t2 = "dm7qeynDwgjzBO5uOg02AFW4OhXZXH1cMdUG"; // <--- GÜNCEL TOKENİ YAPIŞTIR
+    const t2 = "SENIN_TOKEN_KODUN_BURAYA"; // <-- BURAYI DOLDUR
     const TOKEN = t1 + t2;
 
     let vitrin = [];
 
-    // Başlangıç
-    window.onload = async () => {
-        await fetchData();
-    };
+    // Başlat
+    init();
 
-    // 1. Dosya Seçimi ve Önizleme (Hata Çözümü Burası)
-    function previewFile() {
-        const input = document.getElementById('fileInput');
-        const file = input.files[0];
-        const preview = document.getElementById('previewImg');
-        const nameLabel = document.getElementById('fileName');
+    async function init() {
+        // 1. Vitrini Çek
+        try {
+            const res = await fetch(`https://raw.githubusercontent.com/${USER}/${REPO}/main/vitrin.json?t=${Date.now()}`);
+            if(res.ok) vitrin = await res.json();
+        } catch(e) { console.log("Vitrin boş"); }
+        
+        listeyiCiz();
+        arsiviTara(); // Arşivdeki fazlalık resimleri bul
+    }
 
+    function resimSecildi() {
+        const file = document.getElementById('fileInput').files[0];
         if (file) {
+            document.getElementById('fileLabel').innerText = "✅ " + file.name;
             const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                nameLabel.innerText = "✅ " + file.name;
-                nameLabel.style.color = "#fff";
-                nameLabel.style.textShadow = "0 2px 4px rgba(0,0,0,0.8)";
+            reader.onload = e => {
+                document.getElementById('previewBox').src = e.target.result;
+                document.getElementById('previewBox').style.display = "block";
             }
             reader.readAsDataURL(file);
         }
     }
 
-    // 2. Orijinal 1K Resim Motoru (Geri Getirildi)
-    function resizeImage(file) {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX = 1000; // Orijinal 1K ayarı
-                    let w = img.width;
-                    let h = img.height;
-
-                    if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } }
-                    else { if (h > MAX) { w *= MAX / h; h = MAX; } }
-
-                    canvas.width = w; canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-                    
-                    // 0.8 kalite (Original setting)
-                    resolve(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-
-    // 3. Ürün Yükleme (Kontrollü)
-    async function uploadProduct() {
-        const fileInput = document.getElementById('fileInput');
-        const file = fileInput.files[0];
-
-        // Verileri al
-        const name = document.getElementById('name').value;
-        const price = document.getElementById('price').value;
-        const sku = document.getElementById('sku').value;
-        const width = document.getElementById('width').value;
-        const height = document.getElementById('height').value;
-        const collection = document.getElementById('collection').value;
-
-        // Kontrol
-        if (!file) { alert("⚠️ Lütfen fotoğrafa tıklayıp bir resim seçin!"); return; }
-        if (!name || !price || !width || !height) { alert("⚠️ Lütfen ürün bilgilerini doldurun."); return; }
-
-        updateStatus("Fotoğraf Optimize Ediliyor... ⚙️");
+    // --- 1. YENİ ÜRÜN YÜKLEME ---
+    async function urunuYukle() {
+        const file = document.getElementById('fileInput').files[0];
+        const meta = formVerileriniAl();
         
-        // Resmi işle
+        if(!meta) { alert("Lütfen tüm bilgileri girin."); return; }
+        if(!file) { alert("Lütfen bir fotoğraf seçin."); return; }
+
+        durum("Fotoğraf Hazırlanıyor... ⚙️");
+        
+        // Resmi işle (1000px)
         const base64 = await resizeImage(file);
         const fileName = `images/p_${Date.now()}.jpg`;
 
-        updateStatus("Buluta Yükleniyor... ☁️");
-
-        // GitHub'a Resim Yükle
+        durum("Buluta Gönderiliyor... ☁️");
+        
+        // GitHub'a yükle
         const imgUrl = await uploadToGithub(fileName, base64);
         
-        if (imgUrl) {
-            const newItem = {
-                id: Date.now(),
-                url: imgUrl,
-                name: name,
-                price: price,
-                sku: sku || "STOK- YOK",
-                en: width,
-                boy: height,
-                collection: collection,
-                inStock: true
-            };
-
-            vitrin.push(newItem);
-            await updateJson(vitrin);
-            
-            updateStatus("Başarılı! Vitrin Güncellendi ✅");
+        if(imgUrl) {
+            // Vitrin JSON güncelle
+            await listeyeEkle(imgUrl, meta);
+            durum("Başarılı! Sayfa Yenileniyor ✅");
             setTimeout(() => location.reload(), 1500);
         }
     }
 
-    async function fetchData() {
-        try {
-            const res = await fetch(`https://raw.githubusercontent.com/${USER}/${REPO}/main/vitrin.json?t=${Date.now()}`);
-            if (res.ok) {
-                vitrin = await res.json();
-                renderList();
-            }
-        } catch (e) { console.log(e); }
+    // --- 2. SİLME (Sadece Listeden Çıkarır, Resim Kalır) ---
+    async function sil(id) {
+        if(confirm("Bu ürünü vitrinden kaldırmak istiyor musunuz? (Arşive düşecek)")) {
+            durum("Siliniyor...");
+            
+            // Localden sil
+            vitrin = vitrin.filter(x => x.id !== id);
+            
+            // Sunucuyu güncelle
+            await updateJson(vitrin);
+            
+            listeyiCiz();
+            arsiviTara(); // Arşivi yenile ki sildiğimiz oraya düşsün
+            durum("Kaldırıldı. Arşivden geri yükleyebilirsin.");
+        }
     }
 
-    function renderList() {
-        const list = document.getElementById('productList');
+    // --- 3. ARŞİV SİSTEMİ (Eksik Olan Parça buydu) ---
+    async function arsiviTara() {
+        try {
+            // GitHub'daki images klasörünü tara
+            const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/images`, {
+                headers: { 'Authorization': `token ${TOKEN}` }
+            });
+            
+            if(res.ok) {
+                const tumDosyalar = await res.json();
+                
+                // Vitrindeki resim linklerinin listesini çıkar
+                const aktifLinkler = vitrin.map(item => item.url);
+                
+                // Klasörde olup Vitrinde OLMAYANLARI filtrele
+                const arsivlik = tumDosyalar.filter(dosya => 
+                    !aktifLinkler.includes(dosya.download_url) &&
+                    (dosya.name.endsWith('.jpg') || dosya.name.endsWith('.png'))
+                );
+
+                const grid = document.getElementById('archiveGrid');
+                grid.innerHTML = "";
+                
+                if(arsivlik.length === 0) {
+                    grid.innerHTML = "<p style='color:#555; font-size:12px; grid-column:span 3; text-align:center;'>Arşiv boş.</p>";
+                    return;
+                }
+
+                arsivlik.forEach(dosya => {
+                    grid.innerHTML += `
+                        <div class="archive-item" onclick="arsivdenGeriYukle('${dosya.download_url}')">
+                            <img src="${dosya.download_url}">
+                            <div class="archive-tag">GERİ YÜKLE</div>
+                        </div>
+                    `;
+                });
+            }
+        } catch(e) { console.log("Arşiv hatası", e); }
+    }
+
+    async function arsivdenGeriYukle(url) {
+        const ad = prompt("Ürün Adı:", "Arşiv Ürünü");
+        if(!ad) return;
+        
+        // Hızlıca rastgele veya varsayılan değerlerle geri yükler, sonra düzenlenebilir
+        const meta = {
+            name: ad,
+            price: prompt("Fiyat:", "0"),
+            sku: "ARSV-01",
+            en: prompt("En:", "160"),
+            boy: prompt("Boy:", "230"),
+            collection: "Arşiv",
+            inStock: true
+        };
+
+        durum("Geri Yükleniyor...");
+        await listeyeEkle(url, meta);
+        durum("Geri Yüklendi! ✅");
+        
+        // Listeleri güncelle
+        listeyiCiz();
+        arsiviTara(); // Arşivden düşsün
+    }
+
+    // --- YARDIMCI FONKSİYONLAR ---
+    
+    async function listeyeEkle(url, meta) {
+        const yeni = { id: Date.now(), url: url, ...meta };
+        vitrin.push(yeni);
+        await updateJson(vitrin);
+    }
+
+    function formVerileriniAl() {
+        const name = document.getElementById('name').value;
+        const price = document.getElementById('price').value;
+        const w = document.getElementById('width').value;
+        const h = document.getElementById('height').value;
+        
+        if(!name || !price || !w || !h) return null;
+        
+        return {
+            name: name,
+            price: price,
+            sku: document.getElementById('sku').value || "Kod Yok",
+            en: w,
+            boy: h,
+            collection: document.getElementById('coll').value || "Genel",
+            inStock: true
+        };
+    }
+
+    function listeyiCiz() {
+        const list = document.getElementById('activeList');
         list.innerHTML = "";
         
+        // Listeyi ters çevir (en yeni en üstte)
         vitrin.slice().reverse().forEach(p => {
             list.innerHTML += `
                 <div class="item">
@@ -317,56 +333,83 @@
                             <p>${p.sku} • ${p.price} TL</p>
                         </div>
                     </div>
-                    <button class="btn-del" onclick="deleteItem(${p.id})">Sil</button>
+                    <button class="btn-del" onclick="sil(${p.id})">Kaldır</button>
                 </div>
             `;
         });
     }
 
-    async function deleteItem(id) {
-        if(confirm("Silmek istiyor musunuz?")) {
-            vitrin = vitrin.filter(i => i.id !== id);
-            await updateJson(vitrin);
-            renderList();
-        }
-    }
-
-    // --- API FONKSİYONLARI ---
-    async function uploadToGithub(path, content) {
-        try {
-            document.getElementById('loadingBar').style.width = "50%";
-            const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${path}`, {
-                method: 'PUT',
-                headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: "New Product", content: content })
-            });
-            document.getElementById('loadingBar').style.width = "100%";
-            const d = await res.json();
-            return d.content.download_url;
-        } catch(e) { alert("Yükleme Hatası! Tokeni kontrol et."); return null; }
-    }
-
+    // JSON Güncelleme (SHA Kontrollü - Veri Kaybını Önler)
     async function updateJson(data) {
         const url = `https://api.github.com/repos/${USER}/${REPO}/contents/vitrin.json`;
         let sha = "";
+        
         try {
             const get = await fetch(url, { headers: { 'Authorization': `token ${TOKEN}` } });
-            if (get.ok) sha = (await get.json()).sha;
+            if(get.ok) {
+                const json = await get.json();
+                sha = json.sha;
+            }
         } catch(e) {}
 
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+        
         await fetch(url, {
             method: 'PUT',
             headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: "Update", content: content, sha: sha || undefined })
+            body: JSON.stringify({
+                message: "Panel Update",
+                content: content,
+                sha: sha || undefined
+            })
         });
     }
 
-    function updateStatus(msg) {
-        const el = document.getElementById('statusMsg');
+    // Resim İşleme
+    function resizeImage(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX = 1000;
+                    let w = img.width, h = img.height;
+                    if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } }
+                    else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function uploadToGithub(path, content) {
+        try {
+            const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${path}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: "New Image", content: content })
+            });
+            const d = await res.json();
+            return d.content.download_url;
+        } catch(e) { 
+            alert("Yükleme Hatası! Token'ı kontrol et."); 
+            document.getElementById('status').style.display='none';
+            return null; 
+        }
+    }
+
+    function durum(msg) {
+        const el = document.getElementById('status');
         el.style.display = 'block';
         el.innerText = msg;
     }
 </script>
+
 </body>
 </html>
