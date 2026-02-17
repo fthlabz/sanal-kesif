@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yönetim Paneli | Final</title>
+    <title>Yönetim Paneli | Final Fix</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -35,10 +35,7 @@
             margin-bottom: 20px; position: relative;
         }
         
-        /* Gizli Input ama tıklanabilir alan */
-        .file-trigger {
-            display: block; padding: 30px 0; cursor: pointer;
-        }
+        .file-trigger { display: block; padding: 30px 0; cursor: pointer; }
         #fileInput { display: none; }
         
         #previewBox {
@@ -53,7 +50,7 @@
             width: 100%; padding: 14px; 
             background: var(--input); border: 1px solid var(--border);
             border-radius: 10px; color: white; font-size: 15px;
-            box-sizing: border-box; /* Taşmayı engeller */
+            box-sizing: border-box;
         }
         input:focus { border-color: var(--accent); outline: none; }
 
@@ -89,9 +86,7 @@
         }
 
         /* --- ARŞİV GRID --- */
-        .archive-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-        }
+        .archive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .archive-item {
             position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden;
             border: 2px solid transparent; cursor: pointer;
@@ -111,7 +106,7 @@
 
 <div class="container">
     <h2>Mağaza Paneli</h2>
-    <div class="subtitle">Vitrin Yönetimi & Arşiv</div>
+    <div class="subtitle">Vitrin Yönetimi</div>
 
     <div class="upload-area">
         <label class="file-trigger" for="fileInput">
@@ -142,32 +137,29 @@
     <div id="activeList">Yükleniyor...</div>
 
     <div class="section-header">☁️ Arşiv (Geri Yükle)</div>
-    <p style="font-size:12px; color:#666; margin-bottom:10px;">Vitrinden sildiğin ürünler resim olarak burada kalır. Tekrar eklemek için resme tıkla.</p>
     <div id="archiveGrid" class="archive-grid"></div>
 </div>
 
 <script>
-    // --- AYARLAR (TOKENİ BURAYA YAZ) ---
+    // --- TOKEN AYARLARI ---
     const USER = "fthlabz"; 
     const REPO = "sanal-kesif"; 
     const t1 = "ghp_"; 
-    const t2 = "dm7qeynDwgjzBO5uOg02AFW4OhXZXH1cMdUG"; // <-- BURAYI DOLDUR
+    const t2 = "dm7qeynDwgjzBO5uOg02AFW4OhXZXH1cMdUG"; // <--- BURAYA TOKENİ YAPIŞTIR
     const TOKEN = t1 + t2;
 
     let vitrin = [];
 
-    // Başlat
     init();
 
     async function init() {
-        // 1. Vitrini Çek
         try {
             const res = await fetch(`https://raw.githubusercontent.com/${USER}/${REPO}/main/vitrin.json?t=${Date.now()}`);
             if(res.ok) vitrin = await res.json();
-        } catch(e) { console.log("Vitrin boş"); }
+        } catch(e) {}
         
         listeyiCiz();
-        arsiviTara(); // Arşivdeki fazlalık resimleri bul
+        arsiviTara();
     }
 
     function resimSecildi() {
@@ -183,65 +175,134 @@
         }
     }
 
-    // --- 1. YENİ ÜRÜN YÜKLEME ---
+    // --- KRİTİK DÜZELTME: GÜVENLİ YÜKLEME ---
     async function urunuYukle() {
         const file = document.getElementById('fileInput').files[0];
-        const meta = formVerileriniAl();
-        
-        if(!meta) { alert("Lütfen tüm bilgileri girin."); return; }
+        // Verileri Garanti Al
+        const name = document.getElementById('name').value;
+        const price = document.getElementById('price').value;
+        const w = document.getElementById('width').value;
+        const h = document.getElementById('height').value;
+        const sku = document.getElementById('sku').value || "Kod Yok";
+        const coll = document.getElementById('coll').value || "Genel";
+
+        if(!name || !price || !w || !h) { alert("Lütfen Ürün Adı, Fiyat, En ve Boy bilgilerini doldurun."); return; }
         if(!file) { alert("Lütfen bir fotoğraf seçin."); return; }
 
         durum("Fotoğraf Hazırlanıyor... ⚙️");
         
-        // Resmi işle (1000px)
+        // 1. Resmi Hazırla
         const base64 = await resizeImage(file);
         const fileName = `images/p_${Date.now()}.jpg`;
 
         durum("Buluta Gönderiliyor... ☁️");
         
-        // GitHub'a yükle
+        // 2. Resmi Yükle
         const imgUrl = await uploadToGithub(fileName, base64);
         
         if(imgUrl) {
-            // Vitrin JSON güncelle
-            await listeyeEkle(imgUrl, meta);
-            durum("Başarılı! Sayfa Yenileniyor ✅");
-            setTimeout(() => location.reload(), 1500);
+            durum("Liste Güncelleniyor... 📝");
+            
+            // 3. Listeyi GÜNCEL HALİYLE Çek (Senkronizasyon Hatasını Önler)
+            await tazeVeriCek();
+
+            const yeniUrun = {
+                id: Date.now(),
+                url: imgUrl,
+                name: name,      // undefined olamaz artık
+                price: price,
+                sku: sku,
+                en: w,
+                boy: h,
+                collection: coll,
+                inStock: true
+            };
+
+            vitrin.push(yeniUrun);
+            
+            // 4. JSON'u Güncelle
+            const basari = await updateJson(vitrin);
+            
+            if(basari) {
+                durum("✅ Başarılı! Sayfa Yenileniyor...");
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                durum("❌ Hata: Liste güncellenemedi! (Resim arşivde)");
+                alert("Resim yüklendi ama listeye eklenemedi. Sayfayı yenileyip Arşiv'den ekleyebilirsiniz.");
+            }
         }
     }
 
-    // --- 2. SİLME (Sadece Listeden Çıkarır, Resim Kalır) ---
+    // --- SİLME VE ARŞİVLEME ---
     async function sil(id) {
-        if(confirm("Bu ürünü vitrinden kaldırmak istiyor musunuz? (Arşive düşecek)")) {
+        if(confirm("Bu ürünü vitrinden kaldırmak istiyor musunuz?")) {
             durum("Siliniyor...");
-            
-            // Localden sil
+            await tazeVeriCek(); // Silmeden önce de tazele
             vitrin = vitrin.filter(x => x.id !== id);
-            
-            // Sunucuyu güncelle
             await updateJson(vitrin);
-            
             listeyiCiz();
-            arsiviTara(); // Arşivi yenile ki sildiğimiz oraya düşsün
-            durum("Kaldırıldı. Arşivden geri yükleyebilirsin.");
+            arsiviTara();
+            durum("Kaldırıldı.");
         }
     }
 
-    // --- 3. ARŞİV SİSTEMİ (Eksik Olan Parça buydu) ---
+    async function arsivdenGeriYukle(url) {
+        const ad = prompt("Ürün Adı:", "Arşiv Ürünü");
+        if(!ad) return;
+        
+        durum("Geri Yükleniyor...");
+        await tazeVeriCek(); // Çakışmayı önle
+
+        const yeni = {
+            id: Date.now(),
+            url: url,
+            name: ad,
+            price: prompt("Fiyat:", "0"),
+            sku: "ARSV-01",
+            en: prompt("En:", "160"),
+            boy: prompt("Boy:", "230"),
+            collection: "Arşiv",
+            inStock: true
+        };
+
+        vitrin.push(yeni);
+        await updateJson(vitrin);
+        
+        listeyiCiz();
+        arsiviTara();
+        durum("Geri Yüklendi! ✅");
+    }
+
+    // --- YARDIMCI MOTORLAR ---
+    
+    // En Güncel Veriyi Çeken Fonksiyon (Hata Önleyici)
+    async function tazeVeriCek() {
+        try {
+            // Cache busting ile çek
+            const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/vitrin.json?t=${Date.now()}`, {
+                 headers: { 'Authorization': `token ${TOKEN}` }
+            });
+            if(res.ok) {
+                const data = await res.json();
+                // Base64 decode
+                const content = decodeURIComponent(escape(atob(data.content)));
+                vitrin = JSON.parse(content);
+                return data.sha; // SHA'yı döndür
+            }
+        } catch(e) { console.log("Veri çekme hatası", e); }
+        return null;
+    }
+
     async function arsiviTara() {
         try {
-            // GitHub'daki images klasörünü tara
             const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/images`, {
                 headers: { 'Authorization': `token ${TOKEN}` }
             });
             
             if(res.ok) {
                 const tumDosyalar = await res.json();
-                
-                // Vitrindeki resim linklerinin listesini çıkar
                 const aktifLinkler = vitrin.map(item => item.url);
                 
-                // Klasörde olup Vitrinde OLMAYANLARI filtrele
                 const arsivlik = tumDosyalar.filter(dosya => 
                     !aktifLinkler.includes(dosya.download_url) &&
                     (dosya.name.endsWith('.jpg') || dosya.name.endsWith('.png'))
@@ -264,73 +325,25 @@
                     `;
                 });
             }
-        } catch(e) { console.log("Arşiv hatası", e); }
-    }
-
-    async function arsivdenGeriYukle(url) {
-        const ad = prompt("Ürün Adı:", "Arşiv Ürünü");
-        if(!ad) return;
-        
-        // Hızlıca rastgele veya varsayılan değerlerle geri yükler, sonra düzenlenebilir
-        const meta = {
-            name: ad,
-            price: prompt("Fiyat:", "0"),
-            sku: "ARSV-01",
-            en: prompt("En:", "160"),
-            boy: prompt("Boy:", "230"),
-            collection: "Arşiv",
-            inStock: true
-        };
-
-        durum("Geri Yükleniyor...");
-        await listeyeEkle(url, meta);
-        durum("Geri Yüklendi! ✅");
-        
-        // Listeleri güncelle
-        listeyiCiz();
-        arsiviTara(); // Arşivden düşsün
-    }
-
-    // --- YARDIMCI FONKSİYONLAR ---
-    
-    async function listeyeEkle(url, meta) {
-        const yeni = { id: Date.now(), url: url, ...meta };
-        vitrin.push(yeni);
-        await updateJson(vitrin);
-    }
-
-    function formVerileriniAl() {
-        const name = document.getElementById('name').value;
-        const price = document.getElementById('price').value;
-        const w = document.getElementById('width').value;
-        const h = document.getElementById('height').value;
-        
-        if(!name || !price || !w || !h) return null;
-        
-        return {
-            name: name,
-            price: price,
-            sku: document.getElementById('sku').value || "Kod Yok",
-            en: w,
-            boy: h,
-            collection: document.getElementById('coll').value || "Genel",
-            inStock: true
-        };
+        } catch(e) {}
     }
 
     function listeyiCiz() {
         const list = document.getElementById('activeList');
         list.innerHTML = "";
         
-        // Listeyi ters çevir (en yeni en üstte)
         vitrin.slice().reverse().forEach(p => {
+            // undefined kontrolü
+            const isim = p.name || "İsimsiz";
+            const fiyat = p.price || "0";
+            
             list.innerHTML += `
                 <div class="item">
                     <div class="item-left">
                         <img src="${p.url}" class="item-img">
                         <div class="item-info">
-                            <h4>${p.name}</h4>
-                            <p>${p.sku} • ${p.price} TL</p>
+                            <h4>${isim}</h4>
+                            <p>${p.sku || ""} • ${fiyat} TL</p>
                         </div>
                     </div>
                     <button class="btn-del" onclick="sil(${p.id})">Kaldır</button>
@@ -339,33 +352,29 @@
         });
     }
 
-    // JSON Güncelleme (SHA Kontrollü - Veri Kaybını Önler)
     async function updateJson(data) {
         const url = `https://api.github.com/repos/${USER}/${REPO}/contents/vitrin.json`;
-        let sha = "";
         
-        try {
-            const get = await fetch(url, { headers: { 'Authorization': `token ${TOKEN}` } });
-            if(get.ok) {
-                const json = await get.json();
-                sha = json.sha;
-            }
-        } catch(e) {}
-
+        // Önce SHA al
+        let sha = await tazeVeriCek(); // Bu fonksiyon vitrin'i de günceller ama biz üstüne yazacağız
+        
+        // Base64 encode (Türkçe karakter sorunu çözümü ile)
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
         
-        await fetch(url, {
-            method: 'PUT',
-            headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: "Panel Update",
-                content: content,
-                sha: sha || undefined
-            })
-        });
+        try {
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: "Panel Update",
+                    content: content,
+                    sha: sha || undefined
+                })
+            });
+            return res.ok;
+        } catch(e) { return false; }
     }
 
-    // Resim İşleme
     function resizeImage(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -397,17 +406,12 @@
             });
             const d = await res.json();
             return d.content.download_url;
-        } catch(e) { 
-            alert("Yükleme Hatası! Token'ı kontrol et."); 
-            document.getElementById('status').style.display='none';
-            return null; 
-        }
+        } catch(e) { return null; }
     }
 
     function durum(msg) {
         const el = document.getElementById('status');
-        el.style.display = 'block';
-        el.innerText = msg;
+        el.style.display = 'block'; el.innerText = msg;
     }
 </script>
 
