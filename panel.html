@@ -3,44 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yönetim Paneli | Ultimate</title>
+    <title>Yönetim Paneli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- PREMIUM DARK CSS (MOBİL UYUMLU) --- */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        /* --- TEMEL AYARLAR --- */
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #000000; color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            background-color: #000000; 
+            color: #ffffff;
             margin: 0; padding: 20px 15px;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Sağa sola kaymayı engeller */
         }
 
-        h2 { text-align: center; font-size: 22px; margin-bottom: 5px; color: #fff; letter-spacing: -0.5px; }
-        .subtitle { text-align: center; font-size: 13px; color: #666; margin-bottom: 25px; }
+        /* BAŞLIKLAR */
+        h2 { text-align: center; font-size: 20px; margin: 10px 0 5px; color: #fff; }
+        .subtitle { text-align: center; font-size: 12px; color: #666; margin-bottom: 25px; }
 
-        /* KART YAPISI */
-        .card { 
-            background: #1c1c1e; border-radius: 18px; padding: 20px; 
+        /* FOTOĞRAF YÜKLEME KUTUSU (BOZULMAYAN YAPI) */
+        .upload-card {
+            background: #1c1c1e; border-radius: 16px; padding: 20px;
             border: 1px solid #333; margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* FOTOĞRAF ALANI */
-        .upload-area {
-            background: #2c2c2e; border: 2px dashed #444; border-radius: 14px;
-            text-align: center; padding: 30px 10px; cursor: pointer; position: relative;
-            transition: 0.2s;
+        .file-label {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #2c2c2e; border: 2px dashed #444; border-radius: 12px;
+            padding: 30px; cursor: pointer; transition: 0.2s;
+            width: 100%;
         }
-        .upload-area:active { background: #3a3a3c; border-color: #0a84ff; }
-        .upload-icon { font-size: 36px; display: block; margin-bottom: 10px; }
-        #fileName { color: #0a84ff; font-weight: 700; font-size: 14px; }
+        .file-label:active { background: #333; border-color: #0a84ff; }
+        
+        .icon { font-size: 32px; margin-bottom: 10px; }
+        #fileName { color: #0a84ff; font-weight: bold; font-size: 14px; text-align: center; }
         input[type="file"] { display: none; }
 
-        /* INPUTLAR */
-        .form-group { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
-        
-        label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
-        
+        /* FORM INPUTLARI */
+        .form-grid { margin-top: 20px; display: flex; flex-direction: column; gap: 15px; }
+
+        .input-wrapper { display: flex; flex-direction: column; gap: 5px; }
+        .input-wrapper label { font-size: 11px; color: #888; font-weight: bold; margin-left: 2px; }
+
         input {
             width: 100%; background: #000; border: 1px solid #444; color: white;
             padding: 14px; border-radius: 10px; font-size: 16px;
@@ -48,113 +52,113 @@
         input:focus { border-color: #0a84ff; }
 
         .row { display: flex; gap: 10px; }
-        .row div { flex: 1; } /* Input kapsayıcısı */
+        .row .input-wrapper { flex: 1; }
 
         /* BUTONLAR */
         .btn {
             width: 100%; padding: 16px; border: none; border-radius: 12px;
             font-size: 16px; font-weight: bold; cursor: pointer; color: white;
-            margin-top: 10px; transition: 0.2s;
+            margin-top: 10px; transition: 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn-blue { background: #0a84ff; }
-        .btn-green { background: #30d158; margin-bottom: 20px; font-size: 14px; padding: 12px; }
-        .btn-red { background: rgba(255, 69, 58, 0.2); color: #ff453a; font-size: 12px; padding: 8px 12px; width: auto; border-radius: 8px; }
-        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-primary { background: #0a84ff; }
+        .btn-success { background: #30d158; margin-bottom: 20px; font-size: 14px; padding: 12px; }
+        .btn-danger { background: rgba(255, 69, 58, 0.2); color: #ff453a; font-size: 12px; padding: 6px 12px; width: auto; border-radius: 8px; }
+        .btn:active { transform: scale(0.98); opacity: 0.8; }
 
         /* LİSTE */
-        .section-title { font-size: 17px; font-weight: 700; margin: 30px 0 15px 5px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        
-        .product-item {
+        .list-header { font-size: 16px; font-weight: bold; margin: 30px 0 15px 0; border-bottom: 1px solid #333; padding-bottom: 10px; }
+
+        .item {
             display: flex; align-items: center; justify-content: space-between;
-            background: #252527; padding: 12px; border-radius: 12px;
+            background: #252527; padding: 10px; border-radius: 12px;
             margin-bottom: 10px; border: 1px solid #333;
         }
-        .p-left { display: flex; align-items: center; gap: 12px; }
-        .p-img { width: 55px; height: 55px; border-radius: 8px; object-fit: cover; background: #000; }
-        .p-info h4 { margin: 0; font-size: 15px; color: white; }
-        .p-info p { margin: 3px 0 0; font-size: 13px; color: #aaa; }
+        .item-left { display: flex; align-items: center; gap: 12px; }
+        .item-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #000; }
+        .item-info h4 { margin: 0; font-size: 14px; color: white; font-weight: 600; }
+        .item-info p { margin: 2px 0 0; font-size: 12px; color: #aaa; }
 
         /* ARŞİV */
         .archive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .archive-item { 
+        .archive-box { 
             position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; 
             border: 1px solid #444; cursor: pointer;
         }
-        .archive-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.2s; }
-        .archive-item:hover img { opacity: 1; }
-        .archive-label { 
-            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.5); color: white; font-weight: bold; font-size: 24px; opacity: 0;
+        .archive-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+        .archive-text { 
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: rgba(10, 132, 255, 0.8); color: white; 
+            font-size: 10px; text-align: center; padding: 4px; font-weight: bold;
         }
-        .archive-item:hover .archive-label { opacity: 1; }
 
-        #status { text-align: center; color: #0a84ff; margin-top: 15px; display: none; font-weight: bold; font-size: 14px;}
+        #status { text-align: center; color: #0a84ff; margin-top: 15px; display: none; font-weight: bold; font-size: 13px; }
     </style>
 </head>
 <body>
 
-    <h2>Fthlabz Yönetim</h2>
+    <h2>Fthlabz Panel</h2>
     <div class="subtitle">Vitrin Kontrol Merkezi</div>
 
-    <button class="btn btn-green" onclick="whatsappNumarasiAyarla()">📞 WhatsApp Numarasını Kaydet</button>
+    <button class="btn btn-success" onclick="whatsappKaydet()">📞 WhatsApp Numarasını Kaydet</button>
 
-    <div class="card">
-        <label class="upload-area" for="fileInput">
-            <span class="upload-icon">📸</span>
+    <div class="upload-card">
+        <label class="file-label" for="fileInput">
+            <span class="icon">📸</span>
             <span id="fileName">Fotoğraf Seç</span>
         </label>
         <input type="file" id="fileInput" accept="image/*" onchange="dosyaGoster(this)">
 
-        <div class="form-group">
-            <div>
-                <label>Ürün Adı</label>
-                <input type="text" id="name" placeholder="Örn: Gri Salon Halısı">
+        <div class="form-grid">
+            <div class="input-wrapper">
+                <label>ÜRÜN ADI</label>
+                <input type="text" id="pName" placeholder="Örn: Gri Salon Halısı">
             </div>
             
             <div class="row">
-                <div>
-                    <label>Fiyat (TL)</label>
-                    <input type="number" id="price" placeholder="12500">
+                <div class="input-wrapper">
+                    <label>FİYAT (TL)</label>
+                    <input type="number" id="pPrice" placeholder="12500">
                 </div>
-                <div>
-                    <label>Stok Kodu</label>
-                    <input type="text" id="sku" placeholder="KOD-01">
+                <div class="input-wrapper">
+                    <label>STOK KODU</label>
+                    <input type="text" id="pSku" placeholder="KOD-01">
                 </div>
             </div>
 
             <div class="row">
-                <div>
-                    <label>En (cm)</label>
-                    <input type="number" id="en" placeholder="160">
+                <div class="input-wrapper">
+                    <label>EN (CM)</label>
+                    <input type="number" id="pEn" placeholder="160">
                 </div>
-                <div>
-                    <label>Boy (cm)</label>
-                    <input type="number" id="boy" placeholder="230">
+                <div class="input-wrapper">
+                    <label>BOY (CM)</label>
+                    <input type="number" id="pBoy" placeholder="230">
                 </div>
             </div>
             
-            <div>
-                <label>Koleksiyon</label>
-                <input type="text" id="coll" placeholder="Örn: Vintage">
+            <div class="input-wrapper">
+                <label>KOLEKSİYON</label>
+                <input type="text" id="pColl" placeholder="Örn: Vintage">
             </div>
             
-            <button class="btn btn-blue" onclick="urunuYukle()">✨ Vitrine Ekle</button>
+            <button class="btn btn-primary" onclick="urunuYukle()">✨ Vitrine Ekle</button>
             <div id="status">İşlem yapılıyor...</div>
         </div>
     </div>
 
-    <div class="section-title">Yayındaki Ürünler</div>
+    <div class="list-header">Yayındaki Ürünler</div>
     <div id="activeList">Yükleniyor...</div>
 
-    <div class="section-title">☁️ Arşiv (Geri Yükle)</div>
+    <div class="list-header">☁️ Arşiv (Geri Yükle)</div>
+    <p style="font-size:11px; color:#666; margin-top:-10px; margin-bottom:15px;">Vitrinden silinen ürünler buraya düşer.</p>
     <div id="archiveGrid" class="archive-grid"></div>
 
 <script>
-    // --- TOKEN AYARLARI ---
+    // --- GÜNCEL TOKENİ BURAYA YAPIŞTIR ---
     const USER = "fthlabz"; 
     const REPO = "sanal-kesif"; 
     const t1 = "ghp_"; 
-    const t2 = "SENIN_TOKEN_KODUN_BURAYA"; // <-- BURAYI GÜNCELLE
+    const t2 = "dm7qeynDwgjzBO5uOg02AFW4OhXZXH1cMdUG"; // <-- BURAYA YAPIŞTIR
     const TOKEN = t1 + t2;
 
     let vitrin = [];
@@ -167,7 +171,8 @@
         try {
             const res = await fetch(`https://raw.githubusercontent.com/${USER}/${REPO}/main/vitrin.json?t=${Date.now()}`);
             if(res.ok) vitrin = await res.json();
-        } catch(e) {}
+            else vitrin = [];
+        } catch(e) { vitrin = []; }
         
         listeyiCiz();
         arsiviTara();
@@ -180,42 +185,47 @@
         }
     }
 
-    // --- WHATSAPP AYARI ---
-    async function whatsappNumarasiAyarla() {
-        const tel = prompt("WhatsApp Numarası (Başında 90 olacak şekilde):", "90555xxxxxxx");
-        if(tel) {
-            durum("Numara Kaydediliyor...");
-            const settings = { phone: tel };
-            const content = btoa(JSON.stringify(settings));
-            
-            let sha = "";
-            try {
-                const get = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/settings.json`, { headers: {'Authorization': `token ${TOKEN}`} });
-                if(get.ok) sha = (await get.json()).sha;
-            } catch(e){}
+    // --- WHATSAPP KAYDET ---
+    async function whatsappKaydet() {
+        const tel = prompt("WhatsApp No (Başında 90 olacak şekilde):", "905xxxxxxxxx");
+        if(!tel) return;
+        
+        durum("Numara Kaydediliyor...");
+        const settings = { phone: tel };
+        const content = btoa(JSON.stringify(settings));
+        
+        // Önce SHA al (varsa)
+        let sha = "";
+        try {
+            const get = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/settings.json`, { headers: {'Authorization': `token ${TOKEN}`} });
+            if(get.ok) sha = (await get.json()).sha;
+        } catch(e){}
 
-            await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/settings.json`, {
-                method: 'PUT',
-                headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: "Phone Update", content: content, sha: sha || undefined })
-            });
-            alert("Numara başarıyla kaydedildi!");
-            durum("");
-        }
+        // Kaydet
+        await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/settings.json`, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: "Phone Update", content: content, sha: sha || undefined })
+        });
+        alert("Numara kaydedildi!");
+        durum("");
     }
 
-    // --- ÜRÜN YÜKLEME (DİREKT LİSTEYE - HATA DÜZELTİLDİ) ---
+    // --- YENİ ÜRÜN YÜKLEME ---
     async function urunuYukle() {
         const file = document.getElementById('fileInput').files[0];
-        const name = document.getElementById('name').value;
-        const price = document.getElementById('price').value;
-        const en = document.getElementById('en').value;
-        const boy = document.getElementById('boy').value;
-        const sku = document.getElementById('sku').value || "Kod Yok";
-        const coll = document.getElementById('coll').value || "Genel";
+        
+        // ID'leri HTML ile birebir eşleştirdim
+        const name = document.getElementById('pName').value;
+        const price = document.getElementById('pPrice').value;
+        const en = document.getElementById('pEn').value;
+        const boy = document.getElementById('pBoy').value;
+        const sku = document.getElementById('pSku').value || "Kod Yok";
+        const coll = document.getElementById('pColl').value || "Genel";
 
+        // Kontrol
         if(!file) { alert("Lütfen fotoğraf seçin!"); return; }
-        if(!name || !price || !en || !boy) { alert("Lütfen bilgileri eksiksiz doldurun."); return; }
+        if(!name || !price || !en || !boy) { alert("Lütfen Ad, Fiyat, En ve Boy girin."); return; }
 
         durum("Fotoğraf Hazırlanıyor... ⏳");
         const base64 = await resizeImage(file);
@@ -225,12 +235,12 @@
         const imgUrl = await uploadToGithub(fileName, base64);
 
         if(imgUrl) {
-            durum("Listeye İşleniyor... 📝");
+            durum("Listeye Ekleniyor... 📝");
             
-            // Veri Çakışmasını Önlemek İçin En Güncel Veriyi Çek
+            // Çakışmayı önlemek için son listeyi çek
             await tazeVeriCek();
 
-            const yeniUrun = {
+            const yeni = {
                 id: Date.now(),
                 url: imgUrl,
                 name: name,
@@ -242,18 +252,31 @@
                 inStock: true
             };
 
-            vitrin.push(yeniUrun);
+            vitrin.push(yeni);
             await updateJson(vitrin);
             
-            durum("✅ Başarılı! Sayfa Yenileniyor...");
+            durum("✅ BAŞARILI! Ekran Yenileniyor...");
             setTimeout(() => location.reload(), 1500);
         } else {
             durum("Hata: Resim yüklenemedi!");
         }
     }
 
-    // --- ARŞİVDEN GERİ YÜKLEME (PROMPT İLE) ---
-    async function arsivdenGeriYukle(url) {
+    // --- SİLME (LİSTEDEN KALDIRIR, ARŞİVE ATAR) ---
+    async function sil(id) {
+        if(confirm("Vitrin'den kaldırılsın mı? (Arşive gider)")) {
+            durum("Kaldırılıyor...");
+            await tazeVeriCek();
+            vitrin = vitrin.filter(x => x.id !== id);
+            await updateJson(vitrin);
+            listeyiCiz();
+            arsiviTara();
+            durum("");
+        }
+    }
+
+    // --- ARŞİVDEN GERİ YÜKLEME ---
+    async function geriYukle(url) {
         const ad = prompt("Ürün Adı:"); if(!ad) return;
         const fiyat = prompt("Fiyat (TL):");
         const en = prompt("En (cm):");
@@ -281,34 +304,22 @@
         durum("Geri Yüklendi ✅");
     }
 
-    // --- SİLME (ARŞİVE GİDER) ---
-    async function sil(id) {
-        if(confirm("Yayından kaldırılsın mı? (Arşive gider)")) {
-            durum("Siliniyor...");
-            await tazeVeriCek();
-            vitrin = vitrin.filter(x => x.id !== id);
-            await updateJson(vitrin);
-            listeyiCiz();
-            arsiviTara();
-            durum("");
-        }
-    }
-
-    // --- YARDIMCI MOTORLAR ---
+    // --- YARDIMCI FONKSİYONLAR ---
     function listeyiCiz() {
         const div = document.getElementById('activeList');
         div.innerHTML = "";
+        // Yeni en üstte olsun diye ters çeviriyoruz
         vitrin.slice().reverse().forEach(p => {
             div.innerHTML += `
-                <div class="product-item">
-                    <div class="p-left">
-                        <img src="${p.url}" class="p-img">
-                        <div class="p-info">
+                <div class="item">
+                    <div class="item-left">
+                        <img src="${p.url}" class="item-img">
+                        <div class="item-info">
                             <h4>${p.name}</h4>
                             <p>${p.sku} • ${p.price} TL</p>
                         </div>
                     </div>
-                    <button class="btn btn-red" onclick="sil(${p.id})">Kaldır</button>
+                    <button class="btn btn-danger" onclick="sil(${p.id})">Kaldır</button>
                 </div>
             `;
         });
@@ -322,15 +333,16 @@
             if(res.ok) {
                 const dosyalar = await res.json();
                 const aktifUrls = vitrin.map(v => v.url);
-                const arsiv = dosyalar.filter(d => !aktifUrls.includes(d.download_url) && d.name.match(/\.(jpg|png|webp)$/));
+                // Listede OLMAYAN resimler arşivdir
+                const arsiv = dosyalar.filter(d => !aktifUrls.includes(d.download_url) && d.name.match(/\.(jpg|png|webp|jpeg)$/i));
 
                 const grid = document.getElementById('archiveGrid');
                 grid.innerHTML = "";
                 arsiv.forEach(d => {
                     grid.innerHTML += `
-                        <div class="archive-item" onclick="arsivdenGeriYukle('${d.download_url}')">
+                        <div class="archive-box" onclick="geriYukle('${d.download_url}')">
                             <img src="${d.download_url}">
-                            <div class="archive-label">+</div>
+                            <div class="archive-text">GERİ YÜKLE</div>
                         </div>
                     `;
                 });
@@ -338,6 +350,7 @@
         } catch(e){}
     }
 
+    // JSON'u okuyup RAM'deki değişkeni günceller
     async function tazeVeriCek() {
         try {
             const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/vitrin.json?t=${Date.now()}`, {
@@ -348,9 +361,10 @@
                 vitrin = JSON.parse(decodeURIComponent(escape(atob(json.content))));
                 return json.sha;
             }
-        } catch(e){}
+        } catch(e) { vitrin = []; }
     }
 
+    // JSON'u GitHub'a yazar
     async function updateJson(data) {
         const url = `https://api.github.com/repos/${USER}/${REPO}/contents/vitrin.json`;
         let sha = await tazeVeriCek();
@@ -362,6 +376,7 @@
         });
     }
 
+    // Resim Yükleme
     async function uploadToGithub(path, content) {
         try {
             const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${path}`, {
