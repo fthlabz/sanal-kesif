@@ -3,115 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yönetim Paneli | Dark</title>
+    <title>Yönetim Paneli | Premium Dark</title>
     <style>
-        /* --- KOYU TEMA AYARLARI --- */
+        /* --- SENİN İSTEDİĞİN KOYU PREMIUM TASARIM --- */
         :root {
-            --primary-color: #ffffff;
-            --accent-color: #0a84ff;
             --bg-color: #000000;
             --card-bg: #1c1c1e;
+            --input-bg: #2c2c2e;
             --text-main: #ffffff;
             --text-muted: #8e8e93;
-            --radius: 16px;
-            --border: #2c2c2e;
+            --accent-color: #0a84ff;
+            --danger-color: #ff453a;
+            --border-color: #38383a;
         }
 
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
             background: var(--bg-color);
-            min-height: 100vh;
-            margin: 0; padding: 20px 15px;
             color: var(--text-main);
+            margin: 0; padding: 20px 15px;
         }
 
         .container { 
             max-width: 600px; margin: auto; 
             background: var(--card-bg); 
             padding: 25px; 
-            border-radius: var(--radius); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            border: 1px solid var(--border);
+            border-radius: 20px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
+            border: 1px solid var(--border-color);
         }
 
-        h2 { text-align: center; margin: 0 0 5px 0; font-size: 22px; font-weight: 700; }
+        h2 { text-align: center; color: var(--text-main); margin: 0 0 5px 0; font-size: 22px; font-weight: 700; }
         .subtitle { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 25px; }
 
         /* YÜKLEME KUTUSU */
         .upload-box { 
-            background: #111; 
+            background: #121212; 
             padding: 20px; 
-            border-radius: 12px; 
-            border: 2px dashed #3a3a3c; 
+            border-radius: 16px; 
+            border: 2px dashed #444; 
             text-align: center; 
             margin-bottom: 25px; 
         }
 
         input[type="file"] { display: none; }
         .custom-file-upload {
-            display: inline-block; padding: 12px 20px;
-            cursor: pointer; background: #2c2c2e;
-            color: white; border-radius: 10px; font-weight: 600; font-size: 14px;
-            margin-bottom: 15px; border: 1px solid #3a3a3c;
+            display: inline-block; padding: 12px 25px; cursor: pointer;
+            background: var(--input-bg); color: white; border-radius: 12px;
+            font-weight: 600; font-size: 14px; border: 1px solid #444; margin-bottom: 10px;
         }
-        #fileNameDisplay { display: block; font-size: 12px; color: var(--accent-color); margin-bottom: 15px; font-weight: bold; }
+        #fileNameDisplay { display: block; font-size: 13px; color: var(--accent-color); margin-bottom: 15px; font-weight: bold; }
 
-        /* INPUTLAR (ALT ALTA & YAN YANA) */
-        .input-stack { display: flex; flex-direction: column; gap: 10px; }
-        .input-row { display: flex; gap: 10px; }
-
+        /* INPUT GRUPLARI */
+        .input-group { display: flex; flex-direction: column; gap: 12px; }
+        .row { display: flex; gap: 10px; }
+        
         input { 
             width: 100%; padding: 14px; 
-            background: #000; border: 1px solid #3a3a3c; 
+            background: #000; border: 1px solid #444; 
             border-radius: 10px; font-size: 15px; color: white;
             box-sizing: border-box; outline: none;
         }
         input:focus { border-color: var(--accent-color); }
 
         button.btn-add { 
-            width: 100%; background: var(--accent-color); 
-            color: white; border: none; padding: 15px; 
-            border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px;
-            margin-top: 10px;
+            width: 100%; background: var(--accent-color); color: white; 
+            border: none; padding: 16px; border-radius: 12px; cursor: pointer; 
+            font-weight: bold; font-size: 16px; margin-top: 10px;
         }
 
-        #statusText { color: var(--accent-color); font-weight: 600; font-size: 13px; margin-top: 15px; display: none; }
+        #statusText { color: var(--accent-color); font-weight: 700; font-size: 14px; margin-top: 15px; display: none; }
 
         /* LİSTE */
-        .product-list { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .product-list { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
         .product-item { 
             display: flex; align-items: center; justify-content: space-between; 
-            background: #2c2c2e; padding: 10px; border-radius: 10px; 
+            background: var(--input-bg); padding: 12px; border-radius: 12px; border: 1px solid #333;
         }
         .product-info { display: flex; align-items: center; gap: 12px; }
-        .product-info img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; background: #000; }
+        .product-info img { width: 55px; height: 55px; object-fit: cover; border-radius: 8px; background: #000; }
         .product-details { display: flex; flex-direction: column; }
-        .product-details span.title { font-weight: 600; font-size: 14px; color: white; }
-        .product-details span.meta { font-size: 12px; color: #8e8e93; margin-top: 2px; }
+        .product-details span.title { font-weight: 700; color: white; font-size: 15px; }
+        .product-details span.meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
 
         button.btn-delete { 
-            background: rgba(255, 69, 58, 0.2); color: #ff453a; 
-            border: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 12px; 
+            background: rgba(255, 69, 58, 0.15); color: var(--danger-color); 
+            border: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer;
         }
 
         /* ARŞİV */
         .archive-section { 
-            border-top: 1px solid var(--border); 
-            padding-top: 20px; margin-top: 25px; display: none; 
+            border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 25px; display: none; 
         }
-        .archive-header h3 { margin: 0 0 10px 0; font-size: 15px; color: white; }
-        .archive-grid { 
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; 
-        }
+        .archive-header h3 { margin: 0 0 10px 0; font-size: 16px; color: white; }
+        .archive-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .archive-item { 
-            position: relative; border-radius: 8px; overflow: hidden; cursor: pointer; aspect-ratio: 1;
+            position: relative; border-radius: 10px; overflow: hidden; cursor: pointer; aspect-ratio: 1; border: 1px solid #333;
         }
-        .archive-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+        .archive-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
         .archive-overlay { 
             position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; 
-            color: white; font-weight: bold; font-size: 20px; opacity: 0;
+            color: white; font-weight: 900; font-size: 24px; opacity: 0; background: rgba(0,0,0,0.5);
         }
-        .archive-item:hover img { opacity: 1; }
         .archive-item:hover .archive-overlay { opacity: 1; }
     </style>
 </head>
@@ -123,18 +116,18 @@
 
     <div class="upload-box">
         <label for="fileInput" class="custom-file-upload">📸 Fotoğraf Seç</label>
-        <input type="file" id="fileInput" accept="image/*" onchange="dosyaSecildi(this)">
+        <input type="file" id="fileInput" accept="image/jpeg, image/png, image/webp" onchange="dosyaSecildi(this)">
         <span id="fileNameDisplay">Dosya seçilmedi</span>
         
-        <div class="input-stack">
-            <input type="text" id="nameInput" placeholder="Ürün Adı (Zorunlu)">
+        <div class="input-group">
+            <input type="text" id="nameInput" placeholder="Ürün Adı (Örn: Gri Halı)">
             
-            <div class="input-row">
+            <div class="row">
                 <input type="number" id="priceInput" placeholder="Fiyat (TL)">
                 <input type="text" id="skuInput" placeholder="Stok Kodu">
             </div>
 
-            <div class="input-row">
+            <div class="row">
                 <input type="number" id="enInput" placeholder="En (cm)">
                 <input type="number" id="boyInput" placeholder="Boy (cm)">
             </div>
@@ -150,37 +143,41 @@
 
     <div class="archive-section" id="archiveSection">
         <div class="archive-header">
-            <h3>☁️ Arşiv (Geri Yükle)</h3>
+            <h3>☁️ Bulut Arşivi (Geri Yükle)</h3>
+            <span style="font-size:12px; color:#666">Resme tıkla, bilgileri gir ve geri yükle.</span>
         </div>
         <div class="archive-grid" id="archiveGrid"></div>
     </div>
 </div>
 
 <script>
-    // --- SENİN AYARLARIN ---
+    // --- SENİN GITHUB BİLGİLERİN ---
     const KULLANICI = "fthlabz"; 
     const REPO = "sanal-kesif"; 
     const token1 = "ghp_";
     const token2 = "dm7qeynDwgjzBO5uOg02AFW4OhXZXH1cMdUG"; 
     const githubToken = token1 + token2;
+    // ---------------------------------------------------------
 
     let vitrin = [];
 
-    // --- SENİN ÇALIŞAN SİSTEM BAŞLANGICI ---
     function dosyaSecildi(input) {
         const isim = input.files.length > 0 ? input.files[0].name : "Dosya seçilmedi";
         document.getElementById('fileNameDisplay').innerText = "✅ " + isim;
     }
 
+    // 1. AŞAMA: Sistemi Başlat (Senin Orijinal Mantığın)
     async function sistemiBaslat() {
         try {
             const cevap = await fetch(`https://raw.githubusercontent.com/${KULLANICI}/${REPO}/main/vitrin.json?t=${Date.now()}`);
             if (cevap.ok) { vitrin = await cevap.json(); vitriniCiz(); }
         } catch (e) { console.log("İlk defa defter oluşturulacak."); }
+        
         arsiviGetir();
     }
     sistemiBaslat();
 
+    // 2. ARŞİV TARAMA (Senin Kodunun Aynısı)
     async function arsiviGetir() {
         try {
             const cevap = await fetch(`https://api.github.com/repos/${KULLANICI}/${REPO}/contents/images`, {
@@ -189,11 +186,15 @@
             
             if (cevap.ok) {
                 const dosyalar = await cevap.json();
+                
                 const vitrinUrlleri = vitrin.map(u => u.url);
+                
+                // Arşiv Mantığı: Klasörde var ama Listede yok
                 const arsivDosyalari = dosyalar.filter(d => 
                     (d.name.endsWith('.jpg') || d.name.endsWith('.png') || d.name.endsWith('.webp')) && 
                     !vitrinUrlleri.includes(d.download_url)
                 );
+                
                 arsiviCiz(arsivDosyalari);
             }
         } catch (e) { console.log("Arşiv taranamadı."); }
@@ -202,7 +203,11 @@
     function arsiviCiz(dosyalar) {
         const grid = document.getElementById('archiveGrid');
         const section = document.getElementById('archiveSection');
-        if(dosyalar.length === 0) { section.style.display = 'none'; return; }
+        
+        if(dosyalar.length === 0) {
+            section.style.display = 'none'; 
+            return;
+        }
         
         section.style.display = 'block';
         grid.innerHTML = "";
@@ -217,41 +222,48 @@
         });
     }
 
+    // 3. ARŞİVDEN EKLEME (Senin PROMPT mantığın + Yeni Alanlar)
     async function arsivdenVitrineEkle(url) {
-        // Hızlı ekleme için prompt kullanıyoruz (senin kodundaki gibi)
+        if (vitrin.length >= 50) { alert("Maksimum 50 ürüne ulaştınız!"); return; }
+        
+        // Senin istediğin gibi PROMPT ile soruyoruz (Yeni alanları da ekledim)
         const ad = prompt("Ürün Adı:"); if (!ad) return;
         const fiyat = prompt("Fiyat (TL):");
         const en = prompt("En (cm):");
         const boy = prompt("Boy (cm):");
+        const sku = prompt("Stok Kodu:", "Arşiv"); // Varsayılan değer
         
         const statusText = document.getElementById('statusText');
         statusText.style.display = "block";
-        statusText.innerText = "Geri Yükleniyor...";
+        statusText.innerText = "Arşivden Vitrine Alınıyor... ⏳";
 
-        const yeniUrun = { 
+        // JSON'a yeni alanlarla ekliyoruz
+        vitrin.push({ 
             id: Date.now(), 
             url: url, 
-            name: ad, 
-            price: fiyat || "0", 
-            sku: "Arşiv", 
-            en: en || "160", 
-            boy: boy || "230",
+            name: ad,
+            price: fiyat,
+            en: en, 
+            boy: boy,
+            sku: sku,
             collection: "Arşiv",
-            inStock: true 
-        };
-
-        vitrin.push(yeniUrun);
+            inStock: true
+        });
+        
         await jsonGuncelle(vitrin);
         
         statusText.style.display = "none";
         vitriniCiz();
-        arsiviGetir();
+        arsiviGetir(); 
     }
 
+    // 4. YENİ RESİM YÜKLEME (Senin 1500px HD Motorun - BOZULMADI)
     async function urunuYukle() {
+        if (vitrin.length >= 50) { alert("Maksimum 50 ürüne ulaştınız!"); return; }
+
         const file = document.getElementById('fileInput').files[0];
         
-        // Yeni eklediğimiz inputları alıyoruz
+        // Yeni Inputları Alıyoruz
         const name = document.getElementById('nameInput').value;
         const price = document.getElementById('priceInput').value;
         const sku = document.getElementById('skuInput').value;
@@ -259,11 +271,11 @@
         const boy = document.getElementById('boyInput').value;
         const coll = document.getElementById('collInput').value;
 
-        if (!file || !name || !en || !boy) { alert("Lütfen Fotoğraf, Ad, En ve Boy bilgilerini girin."); return; }
+        if (!file || !name || !en || !boy) { alert("Lütfen resim, isim ve ölçü bilgilerini girin."); return; }
 
         const statusText = document.getElementById('statusText');
         statusText.style.display = "block";
-        statusText.innerText = "HD Optimizasyon... ⏳";
+        statusText.innerText = "HD Optimizasyon (1500px)... ⏳";
 
         const url = URL.createObjectURL(file);
         const img = new Image();
@@ -271,35 +283,45 @@
 
         img.onload = async function() {
             URL.revokeObjectURL(url); 
+            
+            // --- SENİN KODUNDAKİ 1500px MANTIĞI ---
             const canvas = document.createElement('canvas');
             const MAX_BOYUT = 1500; 
-            let width = img.width; let height = img.height;
+            
+            let width = img.width;
+            let height = img.height;
 
-            if (width > height) { if (width > MAX_BOYUT) { height = Math.round(height * (MAX_BOYUT / width)); width = MAX_BOYUT; } } 
-            else { if (height > MAX_BOYUT) { width = Math.round(width * (MAX_BOYUT / height)); height = MAX_BOYUT; } }
+            if (width > height) {
+                if (width > MAX_BOYUT) { height = Math.round(height * (MAX_BOYUT / width)); width = MAX_BOYUT; }
+            } else {
+                if (height > MAX_BOYUT) { width = Math.round(width * (MAX_BOYUT / height)); height = MAX_BOYUT; }
+            }
 
-            canvas.width = width; canvas.height = height;
+            canvas.width = width;
+            canvas.height = height;
             const ctx = canvas.getContext('2d');
-            ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+            
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = "high";
             ctx.drawImage(img, 0, 0, width, height);
 
             const base64Content = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
             const dosyaAdi = "img_" + Date.now() + ".jpg"; 
 
-            statusText.innerText = "Yükleniyor... ☁️";
+            statusText.innerText = "Buluta Kaydediliyor... ☁️";
 
             try {
                 const resimCevap = await fetch(`https://api.github.com/repos/${KULLANICI}/${REPO}/contents/images/${dosyaAdi}`, {
                     method: 'PUT',
                     headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: "Panel upload", content: base64Content })
+                    body: JSON.stringify({ message: `HD Halı: ${en}x${boy}`, content: base64Content })
                 });
 
                 if (resimCevap.ok) {
                     const resimVeri = await resimCevap.json();
                     
-                    // --- BURASI KRİTİK: LİSTEYE EKLİYOR ---
-                    const yeniUrun = { 
+                    // JSON'a Yeni Alanları Ekliyoruz
+                    vitrin.push({ 
                         id: Date.now(), 
                         url: resimVeri.content.download_url, 
                         name: name,
@@ -309,21 +331,26 @@
                         boy: boy,
                         collection: coll,
                         inStock: true
-                    };
-                    
-                    vitrin.push(yeniUrun);
+                    });
+
                     await jsonGuncelle(vitrin);
                     
                     statusText.style.display = "none";
-                    // Formu temizle
+                    // Formu Temizle
                     document.getElementById('fileInput').value = "";
                     document.getElementById('fileNameDisplay').innerText = "Dosya seçilmedi";
                     document.getElementById('nameInput').value = "";
                     
                     vitriniCiz();
-                    arsiviGetir();
-                } else { alert("Yükleme hatası!"); }
-            } catch (error) { alert("Bağlantı hatası!"); }
+                    arsiviGetir(); 
+                } else {
+                    alert("Yükleme hatası!");
+                    statusText.style.display = "none";
+                }
+            } catch (error) { 
+                alert("Bağlantı hatası!"); 
+                statusText.style.display = "none"; 
+            }
         };
     }
 
@@ -331,7 +358,7 @@
         const listeDiv = document.getElementById('productList');
         listeDiv.innerHTML = "";
         
-        // Ters çevirip çiz (en yeni en üstte)
+        // Listeyi ters çevirip çiziyoruz (En yeni en üstte)
         vitrin.slice().reverse().forEach((urun) => {
             listeDiv.innerHTML += `
                 <div class="product-item">
@@ -339,7 +366,7 @@
                         <img src="${urun.url}">
                         <div class="product-details">
                             <span class="title">${urun.name || "İsimsiz"}</span>
-                            <span class="meta">${urun.sku || ""} • ${urun.price || "0"} TL</span>
+                            <span class="meta">${urun.sku || ""} • ${urun.en}x${urun.boy} • ${urun.price || "0"} TL</span>
                         </div>
                     </div>
                     <button class="btn-delete" onclick="urunuSil(${urun.id})">Sil</button>
@@ -349,16 +376,18 @@
     }
 
     async function urunuSil(id) {
-        if (confirm("Vitrin'den kaldırılsın mı? (Arşive gider)")) {
+        if (confirm("Bu halıyı vitrinden kaldırmak istediğinize emin misiniz? (Arşive eklenecek)")) {
             vitrin = vitrin.filter(u => u.id !== id);
             await jsonGuncelle(vitrin);
             vitriniCiz();
-            arsiviGetir(); // Hemen arşive düşer
+            arsiviGetir(); // Hemen arşivde görünsün
         }
     }
 
     async function jsonGuncelle(yeniListe) {
-        const url = `https://api.github.com/repos/${KULLANICI}/${REPO}/contents/vitrin.json`;
+        const path = "vitrin.json";
+        const url = `https://api.github.com/repos/${KULLANICI}/${REPO}/contents/${path}`;
+        
         let sha = "";
         try {
             const getCevap = await fetch(url, { headers: { 'Authorization': `token ${githubToken}` } });
@@ -369,7 +398,7 @@
         await fetch(url, {
             method: 'PUT',
             headers: { 'Authorization': `token ${githubToken}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: "Update", content: base64Content, sha: sha || undefined })
+            body: JSON.stringify({ message: "Vitrin güncellendi", content: base64Content, sha: sha || undefined })
         });
     }
 </script>
