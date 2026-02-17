@@ -3,48 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yönetim Paneli | Pro</title>
+    <title>Yönetim Paneli | Ultimate</title>
     <style>
-        /* --- PRO MOBİL CSS (KAYMA YAPMAZ) --- */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        /* --- PREMIUM DARK CSS (MOBİL UYUMLU) --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: #000000; color: #ffffff;
             margin: 0; padding: 20px 15px;
-            overflow-x: hidden; /* Sağa sola kaymayı engeller */
+            overflow-x: hidden;
         }
 
-        h2 { text-align: center; font-size: 20px; margin-bottom: 5px; color: #fff; }
-        .subtitle { text-align: center; font-size: 12px; color: #888; margin-bottom: 20px; }
+        h2 { text-align: center; font-size: 22px; margin-bottom: 5px; color: #fff; letter-spacing: -0.5px; }
+        .subtitle { text-align: center; font-size: 13px; color: #666; margin-bottom: 25px; }
 
-        /* YÜKLEME KUTUSU */
+        /* KART YAPISI */
         .card { 
-            background: #1c1c1e; border-radius: 16px; padding: 20px; 
-            border: 1px solid #333; margin-bottom: 20px;
+            background: #1c1c1e; border-radius: 18px; padding: 20px; 
+            border: 1px solid #333; margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         /* FOTOĞRAF ALANI */
         .upload-area {
-            background: #2c2c2e; border: 2px dashed #555; border-radius: 12px;
+            background: #2c2c2e; border: 2px dashed #444; border-radius: 14px;
             text-align: center; padding: 30px 10px; cursor: pointer; position: relative;
+            transition: 0.2s;
         }
-        .upload-icon { font-size: 32px; display: block; margin-bottom: 10px; }
-        #fileName { color: #0a84ff; font-weight: bold; font-size: 14px; }
+        .upload-area:active { background: #3a3a3c; border-color: #0a84ff; }
+        .upload-icon { font-size: 36px; display: block; margin-bottom: 10px; }
+        #fileName { color: #0a84ff; font-weight: 700; font-size: 14px; }
         input[type="file"] { display: none; }
 
-        /* INPUTLAR (Büyük ve Okunabilir) */
-        .form-group { margin-top: 20px; display: flex; flex-direction: column; gap: 15px; }
+        /* INPUTLAR */
+        .form-group { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+        
+        label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; margin-left: 5px; }
         
         input {
             width: 100%; background: #000; border: 1px solid #444; color: white;
-            padding: 15px; border-radius: 10px; font-size: 16px; /* Mobilde zoomu engeller */
-            outline: none;
+            padding: 14px; border-radius: 10px; font-size: 16px;
         }
         input:focus { border-color: #0a84ff; }
 
         .row { display: flex; gap: 10px; }
-        .row input { flex: 1; } /* Yan yana eşit dağılım */
+        .row div { flex: 1; } /* Input kapsayıcısı */
 
         /* BUTONLAR */
         .btn {
@@ -53,18 +57,20 @@
             margin-top: 10px; transition: 0.2s;
         }
         .btn-blue { background: #0a84ff; }
-        .btn-green { background: #30d158; margin-bottom: 15px; }
-        .btn-red { background: rgba(255, 69, 58, 0.2); color: #ff453a; font-size: 13px; padding: 8px 12px; width: auto; }
-        .btn:active { opacity: 0.8; transform: scale(0.98); }
+        .btn-green { background: #30d158; margin-bottom: 20px; font-size: 14px; padding: 12px; }
+        .btn-red { background: rgba(255, 69, 58, 0.2); color: #ff453a; font-size: 12px; padding: 8px 12px; width: auto; border-radius: 8px; }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
 
         /* LİSTE */
+        .section-title { font-size: 17px; font-weight: 700; margin: 30px 0 15px 5px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        
         .product-item {
             display: flex; align-items: center; justify-content: space-between;
-            background: #2c2c2e; padding: 12px; border-radius: 12px;
+            background: #252527; padding: 12px; border-radius: 12px;
             margin-bottom: 10px; border: 1px solid #333;
         }
         .p-left { display: flex; align-items: center; gap: 12px; }
-        .p-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #000; }
+        .p-img { width: 55px; height: 55px; border-radius: 8px; object-fit: cover; background: #000; }
         .p-info h4 { margin: 0; font-size: 15px; color: white; }
         .p-info p { margin: 3px 0 0; font-size: 13px; color: #aaa; }
 
@@ -72,53 +78,75 @@
         .archive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .archive-item { 
             position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; 
-            border: 1px solid #444;
+            border: 1px solid #444; cursor: pointer;
         }
-        .archive-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+        .archive-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.2s; }
+        .archive-item:hover img { opacity: 1; }
         .archive-label { 
-            position: absolute; bottom: 0; left: 0; width: 100%; 
-            background: rgba(10, 132, 255, 0.8); color: white; 
-            font-size: 10px; text-align: center; padding: 4px; 
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.5); color: white; font-weight: bold; font-size: 24px; opacity: 0;
         }
+        .archive-item:hover .archive-label { opacity: 1; }
 
-        #status { text-align: center; color: #0a84ff; margin-top: 10px; display: none; font-weight: bold;}
+        #status { text-align: center; color: #0a84ff; margin-top: 15px; display: none; font-weight: bold; font-size: 14px;}
     </style>
 </head>
 <body>
 
-    <h2>Yönetim Paneli</h2>
-    <div class="subtitle">Vitrin Yönetimi & Ayarlar</div>
+    <h2>Fthlabz Yönetim</h2>
+    <div class="subtitle">Vitrin Kontrol Merkezi</div>
 
-    <button class="btn btn-green" onclick="whatsappNumarasiAyarla()">📞 WhatsApp Numarasını Ayarla</button>
+    <button class="btn btn-green" onclick="whatsappNumarasiAyarla()">📞 WhatsApp Numarasını Kaydet</button>
 
     <div class="card">
         <label class="upload-area" for="fileInput">
             <span class="upload-icon">📸</span>
-            <span id="fileName">Fotoğraf Seçmek İçin Tıkla</span>
+            <span id="fileName">Fotoğraf Seç</span>
         </label>
         <input type="file" id="fileInput" accept="image/*" onchange="dosyaGoster(this)">
 
         <div class="form-group">
-            <input type="text" id="name" placeholder="Ürün Adı (Örn: Gri Halı)">
-            <div class="row">
-                <input type="number" id="price" placeholder="Fiyat (TL)">
-                <input type="text" id="sku" placeholder="Stok Kodu">
+            <div>
+                <label>Ürün Adı</label>
+                <input type="text" id="name" placeholder="Örn: Gri Salon Halısı">
             </div>
+            
             <div class="row">
-                <input type="number" id="en" placeholder="En (cm)">
-                <input type="number" id="boy" placeholder="Boy (cm)">
+                <div>
+                    <label>Fiyat (TL)</label>
+                    <input type="number" id="price" placeholder="12500">
+                </div>
+                <div>
+                    <label>Stok Kodu</label>
+                    <input type="text" id="sku" placeholder="KOD-01">
+                </div>
             </div>
-            <input type="text" id="coll" placeholder="Koleksiyon">
+
+            <div class="row">
+                <div>
+                    <label>En (cm)</label>
+                    <input type="number" id="en" placeholder="160">
+                </div>
+                <div>
+                    <label>Boy (cm)</label>
+                    <input type="number" id="boy" placeholder="230">
+                </div>
+            </div>
+            
+            <div>
+                <label>Koleksiyon</label>
+                <input type="text" id="coll" placeholder="Örn: Vintage">
+            </div>
             
             <button class="btn btn-blue" onclick="urunuYukle()">✨ Vitrine Ekle</button>
             <div id="status">İşlem yapılıyor...</div>
         </div>
     </div>
 
-    <h3 style="font-size:16px; margin-top:30px;">Yayındaki Ürünler</h3>
+    <div class="section-title">Yayındaki Ürünler</div>
     <div id="activeList">Yükleniyor...</div>
 
-    <h3 style="font-size:16px; margin-top:30px;">Bulut Arşivi (Geri Yükle)</h3>
+    <div class="section-title">☁️ Arşiv (Geri Yükle)</div>
     <div id="archiveGrid" class="archive-grid"></div>
 
 <script>
@@ -152,16 +180,14 @@
         }
     }
 
-    // --- WHATSAPP NUMARASI AYARLAMA ---
+    // --- WHATSAPP AYARI ---
     async function whatsappNumarasiAyarla() {
-        const tel = prompt("Mağaza WhatsApp Numarası Girin (Başında 90 olacak şekilde, örn: 905551234567):");
+        const tel = prompt("WhatsApp Numarası (Başında 90 olacak şekilde):", "90555xxxxxxx");
         if(tel) {
             durum("Numara Kaydediliyor...");
-            // settings.json oluşturup kaydediyoruz
             const settings = { phone: tel };
             const content = btoa(JSON.stringify(settings));
             
-            // Github'a settings.json olarak at
             let sha = "";
             try {
                 const get = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/settings.json`, { headers: {'Authorization': `token ${TOKEN}`} });
@@ -171,14 +197,14 @@
             await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/settings.json`, {
                 method: 'PUT',
                 headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: "Update Phone", content: content, sha: sha || undefined })
+                body: JSON.stringify({ message: "Phone Update", content: content, sha: sha || undefined })
             });
-            alert("Numara kaydedildi! Müşteri paneli artık bu numarayı kullanacak.");
+            alert("Numara başarıyla kaydedildi!");
             durum("");
         }
     }
 
-    // --- ÜRÜN YÜKLEME (SAĞLAM MANTIK) ---
+    // --- ÜRÜN YÜKLEME (DİREKT LİSTEYE - HATA DÜZELTİLDİ) ---
     async function urunuYukle() {
         const file = document.getElementById('fileInput').files[0];
         const name = document.getElementById('name').value;
@@ -199,12 +225,12 @@
         const imgUrl = await uploadToGithub(fileName, base64);
 
         if(imgUrl) {
-            durum("Listeye Ekleniyor... 📝");
+            durum("Listeye İşleniyor... 📝");
             
-            // Önce en güncel listeyi çek (Hata olmaması için)
+            // Veri Çakışmasını Önlemek İçin En Güncel Veriyi Çek
             await tazeVeriCek();
 
-            vitrin.push({
+            const yeniUrun = {
                 id: Date.now(),
                 url: imgUrl,
                 name: name,
@@ -214,21 +240,21 @@
                 boy: boy,
                 collection: coll,
                 inStock: true
-            });
+            };
 
+            vitrin.push(yeniUrun);
             await updateJson(vitrin);
+            
             durum("✅ Başarılı! Sayfa Yenileniyor...");
             setTimeout(() => location.reload(), 1500);
         } else {
-            durum("Hata oluştu!");
+            durum("Hata: Resim yüklenemedi!");
         }
     }
 
     // --- ARŞİVDEN GERİ YÜKLEME (PROMPT İLE) ---
     async function arsivdenGeriYukle(url) {
-        const ad = prompt("Ürün Adı:");
-        if(!ad) return;
-
+        const ad = prompt("Ürün Adı:"); if(!ad) return;
         const fiyat = prompt("Fiyat (TL):");
         const en = prompt("En (cm):");
         const boy = prompt("Boy (cm):");
@@ -255,7 +281,7 @@
         durum("Geri Yüklendi ✅");
     }
 
-    // --- SİLME ---
+    // --- SİLME (ARŞİVE GİDER) ---
     async function sil(id) {
         if(confirm("Yayından kaldırılsın mı? (Arşive gider)")) {
             durum("Siliniyor...");
@@ -268,7 +294,7 @@
         }
     }
 
-    // --- YARDIMCI FONKSİYONLAR ---
+    // --- YARDIMCI MOTORLAR ---
     function listeyiCiz() {
         const div = document.getElementById('activeList');
         div.innerHTML = "";
@@ -304,7 +330,7 @@
                     grid.innerHTML += `
                         <div class="archive-item" onclick="arsivdenGeriYukle('${d.download_url}')">
                             <img src="${d.download_url}">
-                            <div class="archive-label">GERİ YÜKLE</div>
+                            <div class="archive-label">+</div>
                         </div>
                     `;
                 });
@@ -360,7 +386,8 @@
                     if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } 
                     else { if (h > MAX) { w *= MAX / h; h = MAX; } }
                     canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
                     resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
                 };
                 img.src = e.target.result;
