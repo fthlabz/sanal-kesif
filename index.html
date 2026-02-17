@@ -3,323 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Premium AR Showroom | Dark</title>
+    <title>Sanal Keşif | fthlabz</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Koyu Tema Değişkenleri */
-            --glass: rgba(20, 20, 20, 0.85); /* Koyu cam */
-            --glass-border: rgba(255, 255, 255, 0.15); /* İnce açık çerçeve */
-            --blur: 25px;
-            --primary: #ffffff; /* Ana metin rengi beyaz */
-            --accent: #2563eb; /* Vurgu rengi (Mavi) */
-            --accent-dark: #1d4ed8;
-            --danger: #ef4444;
-            --success: #10b981;
-            --bg-dark: #0a0a0a; /* Koyu arka plan */
-            --component-bg: #1a1a1a; /* Bileşen arka planı */
+            --cam-arkaplan: rgba(255, 255, 255, 0.85);
+            --mavi-vurgu: #007aff;
+            --koyu-renk: #1c1c1e;
         }
+
         body {
-            margin: 0; overflow: hidden;
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg-dark); color: var(--primary);
+            margin: 0;
+            overflow: hidden;
+            font-family: '-apple-system', BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7; /* Lüks gri arka plan */
         }
+
         model-viewer {
-            width: 100vw; height: 100vh;
+            width: 100vw;
+            height: 100vh;
+            background-color: #f5f5f7;
             --poster-color: transparent;
-            /* Koyu radyal gradyan arka plan */
-            background: radial-gradient(circle at 50% 50%, #2a2a2a 0%, #000000 100%);
             outline: none;
         }
-        .ui-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 10;
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .pointer-events-auto { pointer-events: auto; }
 
-        /* --- ÜST PANEL & OKLAR (KOYU) --- */
+        /* --- ÜST BİLGİ PANELİ (BUZLU CAM EFEKTİ) --- */
         .ust-panel {
-            margin: 20px; padding: 12px 15px;
-            background: var(--glass); backdrop-filter: blur(var(--blur));
-            -webkit-backdrop-filter: blur(var(--blur));
-            border-radius: 24px; border: 1px solid var(--glass-border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Daha belirgin koyu gölge */
-            display: flex; align-items: center; justify-content: space-between;
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 400px;
+            background: var(--cam-arkaplan);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 15px 25px;
+            border-radius: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            z-index: 10;
         }
-        .product-info { text-align: center; flex-grow: 1; margin: 0 10px; }
-        .product-info h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: white; }
-        .product-meta { font-size: 13px; color: #aaa; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .in-stock { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .out-stock { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-        .price-tag { font-weight: 700; color: white; font-size: 16px; margin-top: 8px; }
 
         .ok-buton {
-            width: 42px; height: 42px; border-radius: 50%;
-            background: var(--component-bg); border: 1px solid var(--glass-border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
         }
-        .ok-buton:active { transform: scale(0.9); background: #333; }
-        .ok-buton svg { width: 20px; height: 20px; stroke: white; stroke-width: 2.5; }
 
-        /* --- PREMIUM AR BUTONU (GÜNCELLENDİ) --- */
+        .ok-buton:active { transform: scale(0.9); }
+        .ok-buton svg { width: 20px; height: 20px; stroke: var(--koyu-renk); stroke-width: 2.5; }
+
+        .bilgi-merkez { text-align: center; }
+        .bilgi-merkez h3 { margin: 0; font-size: 17px; font-weight: 700; color: var(--koyu-renk); letter-spacing: -0.5px; }
+        .bilgi-merkez p { margin: 4px 0 0 0; font-size: 13px; font-weight: 500; color: #8e8e93; }
+
+        /* --- PREMIUM AR BUTONU --- */
         .premium-ar-buton {
             position: absolute;
-            bottom: 100px; left: 50%; transform: translateX(-50%);
-            /* Gradyan geçişli premium arka plan */
-            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--koyu-renk);
             color: white;
-            border: none; padding: 18px 0; width: 85%; max-width: 380px;
-            border-radius: 30px; font-size: 17px; font-weight: 600;
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4); /* Mavi parıltılı gölge */
-            cursor: pointer; z-index: 10;
-            transition: all 0.3s ease; pointer-events: auto;
-            letter-spacing: 0.5px;
+            border: none;
+            padding: 18px 0;
+            width: 85%;
+            max-width: 380px;
+            border-radius: 30px;
+            font-size: 17px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            cursor: pointer;
+            z-index: 10;
+            transition: background 0.3s ease;
         }
-        .premium-ar-buton:active { transform: translateX(-50%) scale(0.98); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3); }
-        .premium-ar-buton svg { width: 24px; height: 24px; fill: none; stroke: white; stroke-width: 2; }
-        model-viewer > #ar-prompt { display: none; }
 
-        /* --- ALT KONTROLLER (PROFESYONEL GÖRÜNÜM) --- */
-        .bottom-controls {
-            padding: 0 20px 35px 20px;
-            display: flex; flex-direction: column; gap: 15px;
-        }
-        .action-group { display: grid; grid-template-columns: auto auto 1fr; gap: 12px; }
-        .btn {
-            height: 60px; border: none; border-radius: 18px;
-            font-weight: 600; font-size: 15px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: all 0.2s;
-        }
-        /* İkon Butonlar (Koyu Cam) */
-        .btn-icon {
-            width: 60px;
-            background: var(--glass); backdrop-filter: blur(var(--blur));
-            -webkit-backdrop-filter: blur(var(--blur));
-            border: 1px solid var(--glass-border); color: white;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-        .btn-icon:active { transform: scale(0.95); background: rgba(40,40,40,0.9); }
-        .btn-icon.active svg { fill: var(--danger); stroke: var(--danger); filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5)); }
-        
-        /* Ana Satın Alma Butonu (Premium Gradyan) */
-        .btn-primary {
-            background: linear-gradient(135deg, #ffffff, #e2e8f0); color: black;
-            font-size: 16px; letter-spacing: -0.3px;
-            box-shadow: 0 8px 25px rgba(255,255,255,0.15);
-        }
-        .btn-primary:active { transform: scale(0.98); box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
-        .btn-primary svg { fill: black; }
+        .premium-ar-buton:active { background: #000; }
+        .premium-ar-buton svg { width: 22px; height: 22px; fill: none; stroke: white; stroke-width: 2; }
 
-        /* --- YÜKLEME & DİĞER --- */
-        #loading-screen {
-            position: absolute; inset: 0; background: var(--bg-dark); z-index: 99;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        /* --- YÜKLEME EKRANI (PROFESYONEL) --- */
+        #yukleniyor {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: #f5f5f7; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 20;
         }
+
         .spinner {
-            width: 45px; height: 45px; border: 4px solid rgba(255,255,255,0.1);
-            border-top: 4px solid var(--accent); border-radius: 50%;
-            animation: spin 1s linear infinite; margin-bottom: 20px;
+            width: 45px; height: 45px; border: 4px solid #e5e5ea;
+            border-top: 4px solid var(--mavi-vurgu); border-radius: 50%;
+            animation: don 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .toast {
-            position: absolute; top: 110px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.9); color: white; padding: 12px 24px;
-            border-radius: 30px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s;
-            pointer-events: none; z-index: 20; text-align: center; border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        #expired-overlay {
-            position: fixed; inset: 0; background: black; z-index: 100;
-            color: white; display: none; align-items: center; justify-content: center; text-align: center;
-        }
+
+        @keyframes don { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #yukleniyor p { margin-top: 20px; font-size: 15px; font-weight: 600; color: #8e8e93; }
     </style>
 </head>
 <body>
-    <div id="loading-screen">
-        <div class="spinner"></div>
-        <div style="font-weight: 600; color: #aaa; letter-spacing: 0.5px;">SHOWROOM YÜKLENİYOR...</div>
-    </div>
-    <div id="expired-overlay">
-        <div>
-            <h1>⚠️ Süre Doldu</h1>
-            <p style="color: #aaa;">Bu gösterimin süresi dolmuştur.<br>Yönetici ile iletişime geçin.</p>
-        </div>
-    </div>
-    <div id="toast" class="toast">Gerçek boyut için halıyı zemine yerleştirin</div>
 
-    <model-viewer id="mv"
+    <div id="yukleniyor">
+        <div class="spinner"></div>
+        <p>Halı Hazırlanıyor...</p>
+    </div>
+
+    <model-viewer id="hali-gosterici"
         src="https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/BoxTextured/glTF-Binary/BoxTextured.glb"
         ar ar-modes="webxr scene-viewer quick-look"
-        camera-controls shadow-intensity="2" shadow-softness="0.6" exposure="0.8"
-        auto-rotate rotation-per-second="15deg"
-        max-camera-orbit="auto 90deg auto"
-        min-camera-orbit="auto 0deg auto">
-        </model-viewer>
-
-    <div class="ui-layer">
-        <div class="ust-panel pointer-events-auto">
-            <button class="ok-buton" onclick="app.prev()">
-                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-            <div class="product-info">
-                <h1 id="p-name">Yükleniyor...</h1>
-                <div class="product-meta">
-                    <span id="p-collection">...</span> | <span id="p-size">...</span>
-                    <span id="p-stock" class="badge in-stock">STOKTA</span>
-                </div>
-                <div id="p-price" class="price-tag">0 ₺</div>
-            </div>
-            <button class="ok-buton" onclick="app.next()">
-                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
-        </div>
-
-        <button id="arBtnTrigger" class="premium-ar-buton">
+        camera-controls shadow-intensity="1.5" auto-rotate exposure="1">
+        
+        <button slot="ar-button" class="premium-ar-buton">
             <svg viewBox="0 0 24 24"><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3M10 12h4"></path><circle cx="12" cy="12" r="3"></circle></svg>
             Evimde Gör (Kamerayı Aç)
         </button>
+    </model-viewer>
 
-        <div class="bottom-controls pointer-events-auto">
-            <div class="action-group">
-                <button class="btn btn-icon" id="btn-fav" onclick="app.toggleFav()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                </button>
-                <button class="btn btn-icon" onclick="app.takeSnapshot()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                </button>
-                <button class="btn btn-primary" onclick="app.buy()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></path></svg>
-                    Bu Halıyı İstiyorum
-                </button>
-            </div>
+    <div class="ust-panel">
+        <button class="ok-buton" onclick="degistir(-1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        
+        <div class="bilgi-merkez">
+            <h3 id="urun-adi">Yükleniyor...</h3>
+            <p id="urun-olcu">Lütfen Bekleyin</p>
         </div>
+
+        <button class="ok-buton" onclick="degistir(1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
     </div>
 
     <script>
-        const CONFIG = { user: "fthlabz", repo: "sanal-kesif", phone: "905555555555" };
-        class App {
-            constructor() {
-                this.data = [];
-                this.currentIndex = 0;
-                this.favorites = JSON.parse(localStorage.getItem('favs')) || [];
-                this.textureCache = {};
-                this.mv = document.getElementById('mv');
-                this.ui = {
-                    name: document.getElementById('p-name'),
-                    collection: document.getElementById('p-collection'),
-                    size: document.getElementById('p-size'),
-                    price: document.getElementById('p-price'),
-                    stock: document.getElementById('p-stock'),
-                    loading: document.getElementById('loading-screen'),
-                    favBtn: document.getElementById('btn-fav')
-                };
-            }
-            async init() {
-                const params = new URLSearchParams(window.location.search);
-                const expDate = params.get('exp');
-                if (expDate && new Date() > new Date(expDate)) {
-                    document.getElementById('expired-overlay').style.display = 'flex'; return;
-                }
-                try {
-                    const res = await fetch(`https://raw.githubusercontent.com/${CONFIG.user}/${CONFIG.repo}/main/vitrin.json?t=${Date.now()}`);
-                    if (!res.ok) throw new Error("Veri çekilemedi");
-                    this.data = await res.json();
-                    if(this.data.length > 0) {
-                        this.renderProduct(0); this.setupListeners();
-                        if(this.data[1]) this.preloadTexture(this.data[1].url);
-                    } else {
-                        this.ui.name.innerText = "Vitrin Boş"; this.ui.loading.style.display = 'none';
-                    }
-                } catch (e) { console.error(e); this.ui.name.innerText = "Bağlantı Hatası"; }
-            }
-            async renderProduct(index) {
-                if(index < 0 || index >= this.data.length) return;
-                this.currentIndex = index;
-                const product = this.data[index];
-                this.ui.name.innerText = product.name || `Model ${index+1}`;
-                this.ui.collection.innerText = product.collection || 'Genel';
-                this.ui.size.innerText = `${product.en} x ${product.boy} cm`;
-                const priceFormatted = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(product.price);
-                this.ui.price.innerText = priceFormatted;
-                if(product.inStock === false) { this.ui.stock.className = "badge out-stock"; this.ui.stock.innerText = "TÜKENDİ"; } else { this.ui.stock.className = "badge in-stock"; this.ui.stock.innerText = "STOKTA"; }
-                this.updateFavIcon();
-                const scaleX = product.en / 100; const scaleZ = product.boy / 100;
-                this.mv.scale = `${scaleX} 0.01 ${scaleZ}`;
-                try {
-                    let texture = this.textureCache[product.url];
-                    if(!texture) { texture = await this.mv.createTexture(product.url); this.textureCache[product.url] = texture; }
-                    const material = this.mv.model.materials[0];
-                    material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
-                    this.ui.loading.style.display = 'none';
-                } catch(e) { console.error("Doku hatası", e); }
-            }
-            next() { let nextIndex = this.currentIndex + 1; if(nextIndex >= this.data.length) nextIndex = 0; this.renderProduct(nextIndex); }
-            prev() { let prevIndex = this.currentIndex - 1; if(prevIndex < 0) prevIndex = this.data.length - 1; this.renderProduct(prevIndex); }
-            buy() {
-                const p = this.data[this.currentIndex];
-                const msg = `Merhaba, ${p.sku || 'BELIRTILMEMIS'} kodlu, ${p.en}x${p.boy} ölçüsündeki "${p.name}" model halıyı Sanal Keşif uygulamasında gördüm ve sipariş vermek istiyorum. Fiyat: ${p.price} TL`;
-                console.log("Analytics: Whatsapp Clicked", p.sku);
-                window.open(`https://wa.me/${CONFIG.phone}?text=${encodeURIComponent(msg)}`, '_blank');
-            }
-            toggleFav() {
-                const p = this.data[this.currentIndex];
-                const existingIndex = this.favorites.findIndex(f => f.id === p.id);
-                if(existingIndex > -1) { this.favorites.splice(existingIndex, 1); } else { this.favorites.push({ id: p.id, name: p.name }); }
-                localStorage.setItem('favs', JSON.stringify(this.favorites));
-                this.updateFavIcon();
-                this.showToast(existingIndex > -1 ? "Favorilerden çıkarıldı" : "Favorilere eklendi ❤️");
-            }
-            updateFavIcon() {
-                const p = this.data[this.currentIndex];
-                const isFav = this.favorites.some(f => f.id === p.id);
-                const svg = this.ui.favBtn.querySelector('svg');
-                if(isFav) { this.ui.favBtn.classList.add('active'); } else { this.ui.favBtn.classList.remove('active'); }
-            }
-            async takeSnapshot() {
-                try {
-                    const blob = await this.mv.toBlob({mimeType: 'image/png'});
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    const p = this.data[this.currentIndex];
-                    const date = new Date().toISOString().slice(0,10);
-                    a.href = url; a.download = `${p.sku || 'urun'}-${date}.png`; a.click();
-                    URL.revokeObjectURL(url); this.showToast("Fotoğraf galeriye kaydedildi 📸");
-                } catch(e) { alert("Ekran görüntüsü alınamadı. Lütfen cihazın kendi yöntemini kullanın."); }
-            }
-            showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.opacity = 1; setTimeout(() => t.style.opacity = 0, 3000); }
-            preloadTexture(url) { if(!this.textureCache[url]) { this.mv.createTexture(url).then(t => this.textureCache[url] = t); } }
-            
-            setupListeners() {
-                // Swipe Algılama
-                let touchStartX = 0;
-                this.mv.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
-                this.mv.addEventListener('touchend', e => { const diff = touchStartX - e.changedTouches[0].screenX; if(Math.abs(diff) > 50) { diff > 0 ? this.next() : this.prev(); } });
-                
-                // AR Toast Mesajı
-                this.mv.addEventListener('ar-status', (event) => {
-                    if(event.detail.status === 'session-started') { this.showToast("Gerçek boyut için halıyı zemine yerleştirin 📐"); console.log("Analytics: AR Opened"); }
-                });
+        // --- SENİN GITHUB BİLGİLERİN ---
+        const KULLANICI = "fthlabz";
+        // DİKKAT: Depo adın tam olarak neyse aşağıya onu yazmalısın. (Örn: Sanal-Kesif)
+        const REPO = "sanal-kesif"; 
 
-                // --- YENİ EKLENDİ: AR BUTONU TETİKLEYİCİSİ ---
-                const arBtnTrigger = document.getElementById('arBtnTrigger');
-                if(arBtnTrigger) {
-                    arBtnTrigger.addEventListener('click', () => {
-                        // Model Viewer'ın yerleşik AR fonksiyonunu tetikle
-                        this.mv.activateAR();
-                    });
+        let vitrin = [];
+        let aktifIndex = 0;
+        const mv = document.getElementById('hali-gosterici');
+        const yukleniyorEkrani = document.getElementById('yukleniyor');
+
+        async function vitriniGetir() {
+            try {
+                const cevap = await fetch(`https://raw.githubusercontent.com/${KULLANICI}/${REPO}/main/vitrin.json?t=${Date.now()}`);
+                if (cevap.ok) {
+                    vitrin = await cevap.json();
+                    haliyiBas(0);
+                } else {
+                    document.getElementById('urun-adi').innerText = "Hata!";
+                    document.getElementById('urun-olcu').innerText = "Veri Bulunamadı";
                 }
+            } catch (e) { console.error("JSON okuma hatası", e); }
+        }
+
+        async function haliyiBas(index) {
+            if (vitrin.length === 0) return;
+            
+            yukleniyorEkrani.style.display = 'flex';
+            const urun = vitrin[index];
+            
+            document.getElementById('urun-adi').innerText = `Model ${index + 1} / ${vitrin.length}`;
+            document.getElementById('urun-olcu').innerText = `${urun.en} x ${urun.boy} cm`;
+            mv.scale = `${urun.en / 100} 0.01 ${urun.boy / 100}`;
+
+            try {
+                const texture = await mv.createTexture(urun.url);
+                const material = mv.model.materials[0];
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+                material.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
+                yukleniyorEkrani.style.display = 'none';
+            } catch (error) { 
+                console.log("Doku yüklenemedi", error);
+                yukleniyorEkrani.style.display = 'none';
             }
         }
-        const app = new App();
-        window.addEventListener('load', () => app.init());
-        window.app = app;
+
+        window.degistir = function(yon) {
+            if (vitrin.length === 0) return;
+            aktifIndex += yon;
+            if (aktifIndex >= vitrin.length) aktifIndex = 0;
+            if (aktifIndex < 0) aktifIndex = vitrin.length - 1;
+            haliyiBas(aktifIndex);
+        }
+
+        mv.addEventListener('load', vitriniGetir);
     </script>
 </body>
 </html>
