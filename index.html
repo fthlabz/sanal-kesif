@@ -3,196 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sanal Keşif | fthlabz</title>
+    <title>Sanal Keşif | Premium Koleksiyon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
     <style>
         :root {
-            --cam-arkaplan: rgba(255, 255, 255, 0.85);
-            --mavi-vurgu: #007aff;
-            --koyu-renk: #1c1c1e;
+            --bg-dark: #050505;
+            --glass-bg: rgba(20, 20, 20, 0.65);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.12);
+            --gold: #D4AF37; /* Premium Altın Rengi */
+            --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #C5A028 100%);
+            --whatsapp-green: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
         }
 
         body {
             margin: 0;
             overflow: hidden;
-            font-family: '-apple-system', BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f5f5f7; /* Lüks gri arka plan */
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            /* Derinlik katan arka plan */
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000000 90%);
+            color: var(--text-main);
+            height: 100vh;
         }
 
+        /* --- 3D SAHNE --- */
         model-viewer {
             width: 100vw;
             height: 100vh;
-            background-color: #f5f5f7;
             --poster-color: transparent;
             outline: none;
         }
 
-        /* --- ÜST BİLGİ PANELİ (BUZLU CAM EFEKTİ) --- */
-        .ust-panel {
+        /* --- UI KATMANI (Arayüz) --- */
+        .ui-layer {
             position: absolute;
-            top: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 85%;
-            max-width: 400px;
-            background: var(--cam-arkaplan);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 15px 25px;
-            border-radius: 30px;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; /* Tıklamalar arkadaki modele geçsin */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        /* Üst Bar (Logo ve Favori) */
+        .top-bar {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            z-index: 10;
+            align-items: flex-start;
+            pointer-events: auto;
         }
 
-        .ok-buton {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: white;
-            border: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s ease;
-        }
-
-        .ok-buton:active { transform: scale(0.9); }
-        .ok-buton svg { width: 20px; height: 20px; stroke: var(--koyu-renk); stroke-width: 2.5; }
-
-        .bilgi-merkez { text-align: center; }
-        .bilgi-merkez h3 { margin: 0; font-size: 17px; font-weight: 700; color: var(--koyu-renk); letter-spacing: -0.5px; }
-        .bilgi-merkez p { margin: 4px 0 0 0; font-size: 13px; font-weight: 500; color: #8e8e93; }
-
-        /* --- PREMIUM AR BUTONU --- */
-        .premium-ar-buton {
-            position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--koyu-renk);
-            color: white;
-            border: none;
-            padding: 18px 0;
-            width: 85%;
-            max-width: 380px;
+        .brand {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 10px 20px;
             border-radius: 30px;
-            font-size: 17px;
+            border: var(--glass-border);
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            letter-spacing: 0.5px;
+            color: white;
+        }
+        .brand span { color: var(--gold); }
+
+        .fav-btn {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: var(--glass-border);
+            width: 45px; height: 45px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
             cursor: pointer;
-            z-index: 10;
-            transition: background 0.3s ease;
+            transition: 0.3s;
+        }
+        .fav-btn svg { width: 22px; height: 22px; stroke: white; fill: none; transition: 0.3s; }
+        .fav-btn.active svg { fill: var(--gold); stroke: var(--gold); }
+        .fav-btn:active { transform: scale(0.9); }
+
+        /* Alt Panel (Bilgi Kartı) */
+        .bottom-panel {
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
         }
 
-        .premium-ar-buton:active { background: #000; }
-        .premium-ar-buton svg { width: 22px; height: 22px; fill: none; stroke: white; stroke-width: 2; }
+        /* Navigasyon Okları */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: -20px; /* Kartın biraz üstünde dursun */
+            z-index: 12;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .nav-btn:active { background: white; color: black; }
 
-        /* --- YÜKLEME EKRANI (PROFESYONEL) --- */
-        #yukleniyor {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: #f5f5f7; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 20;
+        /* Bilgi Kartı */
+        .info-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: var(--glass-border);
+            border-radius: 24px;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Kartın arkasındaki hafif parlama */
+        .info-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
+            pointer-events: none;
         }
 
+        .category-tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .product-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            margin: 0 0 5px 0;
+            line-height: 1.1;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 10px;
+        }
+        
+        .slogan { font-size: 13px; color: var(--text-muted); font-style: italic; max-width: 65%; }
+        .price { font-size: 22px; font-weight: 700; color: white; text-align: right; }
+        .size-info { font-size: 12px; color: var(--text-muted); display: block; text-align: right; margin-top: 2px;}
+
+        /* Aksiyon Butonları */
+        .action-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-ar {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-whatsapp {
+            flex: 2;
+            background: var(--whatsapp-green);
+            border: none;
+            color: white;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 15px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.3);
+            cursor: pointer;
+            text-decoration: none; /* Link olduğu için */
+        }
+        .btn-whatsapp:active { transform: scale(0.98); }
+
+        /* Yükleniyor Ekranı */
+        #loader {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: black; z-index: 100;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
         .spinner {
-            width: 45px; height: 45px; border: 4px solid #e5e5ea;
-            border-top: 4px solid var(--mavi-vurgu); border-radius: 50%;
-            animation: don 1s linear infinite;
+            width: 40px; height: 40px; border: 3px solid #333;
+            border-top: 3px solid var(--gold); border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        @keyframes don { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #yukleniyor p { margin-top: 20px; font-size: 15px; font-weight: 600; color: #8e8e93; }
     </style>
 </head>
 <body>
 
-    <div id="yukleniyor">
+    <div id="loader">
         <div class="spinner"></div>
-        <p>Halı Hazırlanıyor...</p>
+        <p style="color: #666; font-size: 12px; margin-top: 15px; letter-spacing: 1px;">SHOWROOM YÜKLENİYOR</p>
     </div>
 
     <model-viewer id="hali-gosterici"
         src="https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/BoxTextured/glTF-Binary/BoxTextured.glb"
         ar ar-modes="webxr scene-viewer quick-look"
-        camera-controls shadow-intensity="1.5" auto-rotate exposure="1">
+        camera-controls 
+        shadow-intensity="1.5" 
+        shadow-softness="1"
+        exposure="1"
+        auto-rotate
+        rotation-per-second="15deg">
         
-        <button slot="ar-button" class="premium-ar-buton">
-            <svg viewBox="0 0 24 24"><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3M10 12h4"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            Evimde Gör (Kamerayı Aç)
-        </button>
+        <div class="ui-layer">
+            
+            <div class="top-bar">
+                <div class="brand">Fth<span>labz</span></div>
+                <div class="fav-btn" onclick="favoriToggle()">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </div>
+            </div>
+
+            <div class="bottom-panel">
+                
+                <div class="nav-buttons">
+                    <div class="nav-btn" onclick="degistir(-1)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </div>
+                    <div class="nav-btn" onclick="degistir(1)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <span class="category-tag" id="urun-seri">KATEGORİ</span>
+                    <h1 class="product-title" id="urun-adi">Yükleniyor...</h1>
+                    
+                    <div class="product-meta">
+                        <div class="slogan" id="urun-slogan">Özel tasarım koleksiyon parçası.</div>
+                        <div>
+                            <div class="price" id="urun-fiyat">0 TL</div>
+                            <span class="size-info" id="urun-olcu">0 x 0 cm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <button class="btn-ar" onclick="arBaslat()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3M10 12h4"></path></svg>
+                        Evde Gör
+                    </button>
+                    
+                    <a id="wp-link" href="#" target="_blank" class="btn-whatsapp">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.004-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                        WhatsApp İle İste
+                    </a>
+                </div>
+            </div>
+        </div>
     </model-viewer>
 
-    <div class="ust-panel">
-        <button class="ok-buton" onclick="degistir(-1)">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        </button>
-        
-        <div class="bilgi-merkez">
-            <h3 id="urun-adi">Yükleniyor...</h3>
-            <p id="urun-olcu">Lütfen Bekleyin</p>
-        </div>
-
-        <button class="ok-buton" onclick="degistir(1)">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </button>
-    </div>
-
     <script>
-        // --- SENİN GITHUB BİLGİLERİN ---
+        // --- AYARLAR ---
         const KULLANICI = "fthlabz";
-        // DİKKAT: Depo adın tam olarak neyse aşağıya onu yazmalısın. (Örn: Sanal-Kesif)
         const REPO = "sanal-kesif"; 
-
+        
+        // --- DEĞİŞKENLER ---
         let vitrin = [];
         let aktifIndex = 0;
         const mv = document.getElementById('hali-gosterici');
-        const yukleniyorEkrani = document.getElementById('yukleniyor');
+        const loader = document.getElementById('loader');
 
+        // --- BAŞLATMA ---
         async function vitriniGetir() {
             try {
+                // Cache önlemek için timestamp ekliyoruz
                 const cevap = await fetch(`https://raw.githubusercontent.com/${KULLANICI}/${REPO}/main/vitrin.json?t=${Date.now()}`);
                 if (cevap.ok) {
                     vitrin = await cevap.json();
-                    haliyiBas(0);
-                } else {
-                    document.getElementById('urun-adi').innerText = "Hata!";
-                    document.getElementById('urun-olcu').innerText = "Veri Bulunamadı";
+                    if(vitrin.length > 0) {
+                        haliyiBas(0);
+                    } else {
+                        loader.innerHTML = "<p>Vitrin şu an boş.</p>";
+                    }
                 }
-            } catch (e) { console.error("JSON okuma hatası", e); }
+            } catch (e) { console.error("Veri hatası", e); }
         }
 
+        // --- HALI YÜKLEME VE GÖSTERME ---
         async function haliyiBas(index) {
-            if (vitrin.length === 0) return;
-            
-            yukleniyorEkrani.style.display = 'flex';
             const urun = vitrin[index];
-            
-            document.getElementById('urun-adi').innerText = `Model ${index + 1} / ${vitrin.length}`;
-            document.getElementById('urun-olcu').innerText = `${urun.en} x ${urun.boy} cm`;
-            mv.scale = `${urun.en / 100} 0.01 ${urun.boy / 100}`;
+            if (!urun) return;
 
+            // Loader göster (Doku değişirken)
+            // loader.style.display = 'flex'; // İsteğe bağlı, her geçişte karartma yapar.
+
+            // 1. Yazıları Güncelle
+            document.getElementById('urun-adi').innerText = urun.ad || "Özel Koleksiyon";
+            document.getElementById('urun-seri').innerText = urun.seri || "GENEL";
+            document.getElementById('urun-fiyat').innerText = urun.fiyat || "Fiyat Sorunuz";
+            document.getElementById('urun-olcu').innerText = `${urun.en} x ${urun.boy} cm`;
+            document.getElementById('urun-slogan').innerText = urun.slogan || "Evinize değer katacak şıklık.";
+
+            // 2. WhatsApp Linkini Güncelle (Müşteri için hazır mesaj)
+            const mesaj = `Merhaba, Sanal Keşif'te gördüğüm şu ürünü sormak istiyorum:\n\n*Model:* ${urun.ad}\n*Fiyat:* ${urun.fiyat}\n*Ölçü:* ${urun.en}x${urun.boy}\n\nBu ürün hakkında bilgi alabilir miyim?`;
+            document.getElementById('wp-link').href = `https://api.whatsapp.com/send?phone=905XXXXXXXXXX&text=${encodeURIComponent(mesaj)}`; 
+            // NOT: Yukarıdaki 905XXXXXXXXXX kısmına kendi numaranı yazmalısın.
+
+            // 3. Modeli Güncelle (Boyut ve Doku)
+            mv.scale = `${urun.en / 100} 0.01 ${urun.boy / 100}`;
+            
             try {
                 const texture = await mv.createTexture(urun.url);
                 const material = mv.model.materials[0];
                 material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
                 material.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
-                yukleniyorEkrani.style.display = 'none';
-            } catch (error) { 
-                console.log("Doku yüklenemedi", error);
-                yukleniyorEkrani.style.display = 'none';
+                
+                // Favori Durumunu Kontrol Et
+                favKontrol(urun.id);
+                
+                loader.style.display = 'none'; // Yükleme bitti
+            } catch (error) {
+                console.log("Doku hatası", error);
+                loader.style.display = 'none';
             }
         }
 
+        // --- NAVİGASYON ---
         window.degistir = function(yon) {
             if (vitrin.length === 0) return;
             aktifIndex += yon;
@@ -201,7 +365,43 @@
             haliyiBas(aktifIndex);
         }
 
+        // --- AR BUTONU ---
+        window.arBaslat = function() {
+            mv.activateAR();
+        }
+
+        // --- FAVORİ SİSTEMİ (Local Storage) ---
+        function favoriToggle() {
+            const urun = vitrin[aktifIndex];
+            if(!urun) return;
+
+            let favlar = JSON.parse(localStorage.getItem('favHalis') || "[]");
+            const index = favlar.indexOf(urun.id);
+
+            if (index > -1) {
+                favlar.splice(index, 1); // Çıkar
+                document.querySelector('.fav-btn').classList.remove('active');
+            } else {
+                favlar.push(urun.id); // Ekle
+                document.querySelector('.fav-btn').classList.add('active');
+            }
+            localStorage.setItem('favHalis', JSON.stringify(favlar));
+        }
+
+        function favKontrol(id) {
+            let favlar = JSON.parse(localStorage.getItem('favHalis') || "[]");
+            if(favlar.includes(id)) {
+                document.querySelector('.fav-btn').classList.add('active');
+            } else {
+                document.querySelector('.fav-btn').classList.remove('active');
+            }
+        }
+
+        // Sayfa açılınca başlat
         mv.addEventListener('load', vitriniGetir);
+        // Eğer model-viewer load event'i gecikirse manuel tetikleme:
+        setTimeout(() => { if(vitrin.length===0) vitriniGetir(); }, 1000);
+
     </script>
 </body>
 </html>
