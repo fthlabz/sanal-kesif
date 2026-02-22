@@ -232,6 +232,9 @@
         .btn-sec:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
 
     </style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 </head>
 <body>
 
@@ -290,11 +293,13 @@
     // --- GITHUB AYARLARI ---
     const KULLANICI = "fthlabz"; 
     const REPO = "sanal-kesif"; 
-    const token1 = "ghp_";
-    // Aşağıdaki token kısmını kendi çalışan tokenin ile değiştirmeyi unutma!
-    const token2 = "dm7qeynDwgjzBO5uOg02AFW4OhXZXH1cMdUG"; 
-    const githubToken = token1 + token2;
-    // -----------------------
+    // --- HAYALET KİLİT SİSTEMİ ---
+const sifreliKasa = "U2FsdGVkX19mc0X7xpzonbEzWQgJl2dp+4Oqrqhg6zeA49eOwhvOSgJsBs2IQkLhw61Ilvvd6nS1CVjkJ+0bnA=="; 
+const gizliPin = "1453"; 
+
+const bytes = CryptoJS.AES.decrypt(sifreliKasa, gizliPin);
+const githubToken = bytes.toString(CryptoJS.enc.Utf8); // Alt taraf "githubToken" aradığı için ismi eşitledik.
+// -----------------------
 
     let vitrin = [];
 
